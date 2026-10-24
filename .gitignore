@@ -1,0 +1,28 @@
+# OS GARBAGE (Mac/Windows/Linux)
+# ==============================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+.tscache
+
+# OFFICE GHOST FILES (Temporary Locks)
+# ====================================
+~$*
+
+# PERSONAL DATA (kept local, not committed)
+# =========================================
+*.csv

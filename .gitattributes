@@ -1,0 +1,31 @@
+.gitattributes text eol=lf
+.gitignore     text eol=lf
+
+# Default to LF for everything
+* text=auto eol=lf
+.editorconfig  text eol=lf
+
+# CSVs are for Playnite on Windows: store them byte for byte, keeping CRLF
+*.csv   -text
+
+# Compressed files are Binary
+*.zip   binary
+*.7z    binary
+*.tar   binary
+*.gz    binary
+
+# Docs are Binary
+*.pdf   binary
+*.doc   binary
+*.docx  binary
+*.ppt   binary
+*.pptx  binary
+*.xls   binary
+*.xlsx  binary
+
+# Images are Binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary

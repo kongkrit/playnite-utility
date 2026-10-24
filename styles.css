@@ -1,0 +1,259 @@
+/* Each color is light-dark(light theme, dark theme). color-scheme picks the side: the system
+   setting by default, or the theme button's choice through data-theme. It also themes native
+   parts such as checkboxes, dropdown lists and scrollbars. */
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#f6f7f9, #121418);
+  --surface: light-dark(#ffffff, #1b1e24);
+  --text: light-dark(#1c1f24, #e6e8ec);
+  --muted: light-dark(#5d6470, #9aa3b0);
+  --border: light-dark(#d9dde3, #2d323b);
+  --accent: light-dark(#2f6fed, #6d9cff);
+  --accent-soft: light-dark(#e6eefc, #1d2a45);
+  --warn: light-dark(#b3610a, #f0a94a);
+  --warn-soft: light-dark(#fdf1e0, #3a2a12);
+  --err: light-dark(#c0392b, #ff7b6e);
+  --err-soft: light-dark(#fbe9e7, #3d1c19);
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+/* rem = the browser's default font size, 16px unless the user changed it: 0.9375rem = 15px.
+   Narrower text with the same fonts: Segoe UI (Windows) has no narrow face, so the
+   tighter letter-spacing does the work there; font-stretch applies only where the
+   system font has a narrow width, as on recent macOS. */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 0.9375rem/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-stretch: semi-condensed;
+  letter-spacing: -0.02em;
+  min-height: 100vh;
+}
+
+/* Browsers reset font and letter-spacing on form controls; `font: inherit` carries font-stretch
+   but not letter-spacing. */
+button, input, select {
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.topbar h1 {
+  font-size: 1.125rem;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tab {
+  background: transparent;
+  border-color: transparent;
+  color: var(--muted);
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.tab:hover { color: var(--text); }
+
+.tab.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent-soft);
+}
+
+.theme-toggle {
+  min-width: 84px;
+  margin-left: auto;
+}
+
+main {
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.mono { font-family: var(--mono); font-size: 0.92em; }
+
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 40px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  outline: none;
+}
+
+.dropzone:hover,
+.dropzone:focus-visible,
+.dropzone.dragover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.dz-icon { font-size: 2rem; line-height: 1; color: var(--accent); }
+.dz-title { font-weight: 600; margin-top: 8px; }
+.dz-sub { color: var(--muted); font-size: 0.875rem; }
+
+.error {
+  margin: 16px 0 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: var(--err-soft);
+  color: var(--err);
+}
+
+/* ---------- Playnite Utility page ---------- */
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.controls input { flex: 1 1 200px; }
+
+.changed-count { color: var(--muted); }
+
+.sep { align-self: stretch; width: 1px; background: var(--border); }
+
+.btn { cursor: pointer; }
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn:disabled { opacity: 0.5; cursor: default; }
+
+.lists {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* In a media query em is always the browser default size: 50em = 800px at 16px. */
+@media (max-width: 50em) {
+  .lists { grid-template-columns: 1fr; }
+}
+
+.list {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.list h2 {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 0.9375rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.scroll {
+  max-height: calc(100vh - 190px);
+  overflow: auto;
+}
+
+.games {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.games td {
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.games td + td { color: var(--muted); white-space: nowrap; }
+
+.changed { background: var(--warn-soft); }
+.games tr:hover { background: var(--accent-soft); }
+
+.help {
+  width: min(47.5rem, 100% - 2rem);
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+}
+
+/* A literal color: ::backdrop does not inherit the theme's custom properties in older browsers. */
+.help::backdrop { background: rgb(0 0 0 / 0.5); }
+
+.help h2 { font-size: 1.0625rem; margin: 20px 0 8px; }
+
+/* First heading and a Dismiss button on one row. Showing the dialog focuses that button,
+   which keeps a small screen scrolled to the top. */
+.help-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.help-head h2 { margin: 0; }
+
+/* What? script options, one per row; the path box takes the rest of its row. */
+.ps-options { display: grid; gap: 0.5rem; justify-items: start; margin: 1rem 0; }
+.ps-path { justify-self: stretch; display: flex; align-items: center; gap: 0.5rem; }
+.ps-path input { flex: 1; }
+
+/* Grey block with the Copy button on its own strip at the top right, above the code. */
+.code {
+  margin: 1em 0;
+  padding: 6px 6px 0;
+  border-radius: 6px;
+  background: var(--bg);
+  text-align: right;
+}
+
+.code .btn { padding: 2px 10px; font-size: 0.8125rem; }
+
+.help pre {
+  margin: 0;
+  padding: 0 6px 10px;
+  overflow-x: auto;
+  text-align: left;
+}
+
+.help form { text-align: right; }
+
+/* A step that is easy to miss and makes the script silently do nothing. */
+.warn {
+  margin: 6px 0;
+  padding: 6px 10px;
+  border: 1px solid var(--warn);
+  border-radius: 6px;
+  background: var(--warn-soft);
+}

@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Playnite Utility</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Playnite Utility</h1>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="status" role="tab" aria-selected="true">Set Completion Status</button>
+      <button class="tab" data-tab="tag" role="tab" aria-selected="false">Set Tag</button>
+      <button class="tab" data-tab="hide" role="tab" aria-selected="false">Set Hidden</button>
+      <button class="tab" data-tab="filter" role="tab" aria-selected="false">Filter</button>
+    </nav>
+    <button id="what" class="btn">What?</button>
+    <button id="theme-toggle" class="btn theme-toggle" title="Theme: system">
+      <span id="theme-label">System</span>
+    </button>
+  </header>
+
+  <main>
+    <div id="drop" class="dropzone" tabindex="0">
+      <input type="file" id="file" accept=".csv,text/csv" hidden>
+      <div class="dz-inner">
+        <div class="dz-icon">&#8681;</div>
+        <div class="dz-title">Drop your Playnite export here</div>
+        <div class="dz-sub">or click to choose a .csv file</div>
+      </div>
+    </div>
+
+    <p id="error" class="error" hidden></p>
+
+    <div id="app" hidden>
+      <div class="controls">
+        <label>Filter by status
+          <select id="status-filter"><option value="">&lt;NONE&gt;</option></select>
+        </label>
+        <label>Source:
+          <select id="source-filter"><option value="">&lt;NONE&gt;</option></select>
+        </label>
+        <input type="search" id="filter" placeholder="Filter by name">
+        <label data-mode="hide filter">Tag:
+          <input type="search" id="tag-filter" placeholder="Filter by tag" size="12">
+        </label>
+        <label data-mode="filter"><input type="checkbox" id="include-hidden"> Include hidden</label>
+        <span class="sep" aria-hidden="true" data-mode="status tag filter"></span>
+        <label data-mode="status">Target Completion Status
+          <select id="target">
+            <option>Abandoned</option>
+            <option>Beaten</option>
+            <option selected>Completed</option>
+            <option>Not Played</option>
+            <option>On Hold</option>
+            <option>Plan to Play</option>
+            <option>Played</option>
+            <option>Playing</option>
+          </select>
+        </label>
+        <label data-mode="tag">Apply Tag:
+          <input id="tag" placeholder="Tag name">
+        </label>
+        <span id="changed" class="changed-count" data-mode="status tag hide"></span>
+        <button id="export" class="btn" data-mode="status tag hide">Export .csv</button>
+        <button id="export-unmatched" class="btn" data-mode="filter">Export unmatched</button>
+        <button id="export-matched" class="btn" data-mode="filter">Export matched</button>
+      </div>
+
+      <div id="lists" class="lists">
+        <section class="list">
+          <h2 id="head-a"></h2>
+          <div class="scroll"><table class="games"><tbody id="list-a"></tbody></table></div>
+        </section>
+        <section class="list">
+          <h2 id="head-b"></h2>
+          <div class="scroll"><table class="games"><tbody id="list-b"></tbody></table></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <dialog id="help" class="help">
+    <div class="help-head">
+      <h2>What is this page?</h2>
+      <form method="dialog"><button class="btn">Dismiss</button></form>
+    </div>
+    <p>
+      It gives many games the same <strong>Completion Status</strong> or the same <strong>tag</strong>, or
+      <strong>hides</strong> them, in a few clicks, then saves the result as a new CSV. The
+      <strong>Filter</strong> tab instead splits the games into two CSVs. It runs only in this browser;
+      nothing is uploaded. Games whose <span class="mono">Hidden</span> is <span class="mono">True</span>
+      appear only on <strong>Set Hidden</strong>, and on <strong>Filter</strong> while
+      <strong>Include hidden</strong> is ticked.
+    </p>
+    <ol>
+      <li>Drop a Playnite export (from Library Exporter Advanced) on the box.</li>
+      <li data-mode="status">Pick the <strong>Target Completion Status</strong>.</li>
+      <li data-mode="tag">Type the tag under <strong>Apply Tag</strong>.</li>
+      <li data-mode="hide">Hidden games are on the right. <strong>Tag:</strong> narrows the left list to games
+        whose tags contain the text.</li>
+      <li data-mode="filter">Set any of <strong>Filter by status</strong>, <strong>Source:</strong>,
+        <strong>Filter by name</strong> and <strong>Tag:</strong>. Games that pass all of them are <strong>MATCHED</strong>, on the right; empty
+        filters match everything. The rest are <strong>Unmatched</strong>.</li>
+      <li data-mode="filter">Games whose <span class="mono">Hidden</span> is <span class="mono">True</span> are
+        left out of both lists and both exports. Tick <strong>Include hidden</strong> to include them.</li>
+      <li data-mode="filter">Click <strong>Export unmatched</strong> or <strong>Export matched</strong> to download
+        <span class="mono">games-unmatched_YYYYMMDD_HHMM.csv</span> or
+        <span class="mono">games-matched_YYYYMMDD_HHMM.csv</span>, with every column of the dropped file.
+        Nothing changes in Playnite, so there is no script.</li>
+      <li data-mode="status tag hide">Narrow both lists with <strong>Filter by name</strong> and <strong>Source:</strong>. <strong>Filter by status</strong> narrows only the left list.</li>
+      <li data-mode="status tag hide">Click a game on the left to mark it. Click a game on the right to undo<span data-mode="status tag">
+        a mark you made</span><span data-mode="hide"> or un-hide it, even if it was hidden in the file</span>.
+        Changed games are highlighted.</li>
+      <li data-mode="status tag hide">Click <strong>Export .csv</strong> to download <span class="mono">games-<span data-mode="status">status</span><span
+        data-mode="tag">tag</span><span data-mode="hide">hide</span>_YYYYMMDD_HHMM.csv</span>.</li>
+    </ol>
+
+    <div data-mode="status tag hide">
+    <h2>Import it back into Playnite</h2>
+    <p>
+      Playnite cannot import a CSV, so a short script in Playnite's built-in PowerShell console
+      applies the changes instead. The script below applies what you tick in step 4.
+    </p>
+    <ol>
+      <li>Optional: copy your Playnite folder first, so you can undo. The portable version keeps
+        its whole database in that folder.</li>
+      <li>In Playnite's main menu, open <strong>Extensions &gt; Interactive SDK PowerShell</strong>.</li>
+      <li class="warn">Right away, press <strong>Ctrl+V</strong> then <strong>Enter</strong> in the console. When the
+        console opens, Playnite puts commands on the clipboard that load <span class="mono">$PlayniteApi</span>,
+        the script's link to your library. Do this before you copy the script, because copying replaces
+        those commands. If they're gone, close the console and open it again.</li>
+      <li>Fill in the boxes below, then click <strong>Copy</strong>, paste the script into the console, and
+        press Enter. To get the path, right-click the file in File Explorer and choose
+        <strong>Copy as path</strong> (Windows 10: Shift+right-click).</li>
+    </ol>
+    <div class="ps-options">
+      <label class="ps-path">Exported CSV file <input id="ps-path" placeholder="Full path of the exported .csv"></label>
+      <label><input type="checkbox" id="ps-status"> Set Completion Status</label>
+      <label><input type="checkbox" id="ps-tag"> Add tags <input id="ps-tags" placeholder="RPG, Co-op"></label>
+      <label><input type="checkbox" id="ps-hide"> Set Hidden</label>
+    </div>
+    <div class="code">
+      <button id="copy-script" class="btn">Copy</button>
+<pre id="script" class="mono"></pre>
+    </div>
+    <ul>
+      <li>A game matches a row when both the name and the store (<span class="mono">Sources</span>) match.
+        Upper or lower case and spaces at the start and end are ignored.</li>
+      <li><strong>Set Completion Status</strong> gives each game the status in its row, where they differ.</li>
+      <li><strong>Add tags</strong> adds each listed tag to the games whose <span class="mono">Tags</span>
+        contain it, and creates the tag in Playnite if it's new. It removes no tags.</li>
+      <li><strong>Set Hidden</strong> hides games whose <span class="mono">Hidden</span> says
+        <span class="mono">True</span> and un-hides those that say <span class="mono">False</span>, where that
+        differs. Empty cells are skipped.</li>
+      <li>The boxes start ticked for each column you changed on this page. The script changes only the
+        ticked fields, and only where they differ, so running it twice is safe.</li>
+      <li>The last line reports counts. <strong>matched 0</strong> means
+        <span class="mono">$PlayniteApi</span> wasn't loaded: redo step 3. <strong>matched</strong> should be
+        close to <strong>rows</strong> (the CSV's games); much lower means names or stores don't match. If Playnite hasn't
+        changed since the export you dropped here, <strong>status</strong>, <strong>tagged</strong> and
+        <strong>hidden</strong> should equal the "changed" count each tab showed.</li>
+    </ul>
+    </div>
+
+    <form method="dialog"><button class="btn">Dismiss</button></form>
+  </dialog>
+
+  <script src="index.js"></script>
+</body>
+</html>
