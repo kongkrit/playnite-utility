@@ -184,15 +184,13 @@ It has four tabs: **Set Completion Status**, **Set Tag**, **Set Hidden**, and **
 
 1. Drop a Playnite export from section 3 onto the box.
 2. Pick the status you want to give games under **Target Completion Status**. The choices are Playnite's eight: `Abandoned`, `Beaten`, `Completed`, `Not Played`, `On Hold`, `Plan to Play`, `Played`, `Playing`.
-3. Type part of a name in the filter box to narrow both lists. Matching ignores case. **Source:** also narrows both lists, to one store; its choices are the stores in the dropped file. To narrow only the left list, pick a status under **Filter by status**. It matches the status each row currently shows, and `<NONE>` turns it off. For example, target `Beaten` with filter `Played` lists only the games you've played but not yet marked `Beaten`.
+3. Type part of a name in the filter box to narrow both lists. Matching ignores case. **Source:** also narrows both lists, to one store; its choices are the stores in the dropped file. The box after the filter box, **Show all** by default, narrows both lists to **Show hidden** or **Show not hidden** games; an empty `Hidden` counts as not hidden. To narrow only the left list, pick a status under **Filter by status**. It matches the status each row currently shows, and `<NONE>` turns it off. For example, target `Beaten` with filter `Played` lists only the games you've played but not yet marked `Beaten`.
 4. Click games to mark them, then click **Export .csv**. It downloads `games-status_YYYYMMDD_HHMM.csv`. **Set Tag** and **Set Hidden** name theirs `games-tag_…` and `games-hide_…`.
 
 The page shows two lists side by side:
 
 - **Other statuses**, on the left: games whose status is not the target. Clicking one sets it to the target and moves it right.
 - **The target status**, on the right. Clicking a game you marked puts it back to the status it had in the file and moves it left. Games that already had the target status in the file don't move, because there is nothing to undo. To change one of those, pick its new status as the target and click it on the left.
-
-Games whose `Hidden` is `True` are left out of both lists on this tab and on **Set Tag**. Only **Set Hidden** shows them, and **Filter** while **Include hidden** is ticked.
 
 Each row shows name, store, hours played, and status. Games whose status differs from the file are highlighted in amber, and their status reads like `Played → Beaten`. The count next to **Export .csv** says how many games changed.
 
@@ -243,7 +241,7 @@ The page finds columns by their exact header text, and case matters, so extra or
 | `Sources` | The store shown in each row, and the **Source:** filter. The What? scripts match games by name plus store. | The page rejects the file, as for `Name`. |
 | `Completion Status` | **Set Completion Status**, and **Filter by status** on every tab. | Added, empty. |
 | `Tags` | **Set Tag**, and the **Tag:** box and rows on **Set Hidden** and **Filter**. | Added, empty. |
-| `Hidden` | **Set Hidden**, and **Include hidden** on **Filter**. Games with `True` are left out of the other two Set tabs. | Added, empty. Empty counts as not hidden. |
+| `Hidden` | **Set Hidden**, **Include hidden** on **Filter**, and the **Show all** box on the other two Set tabs. | Added, empty. Empty counts as not hidden. |
 | `Time Played` | The hours shown in each row. | The page shows no hours. |
 
 An added column appears in the export, empty except for the games you clicked. The scripts skip empty cells, so games you didn't click keep their values in Playnite. Other columns, such as `Age Rating`, are not read. They are copied unchanged into the export.

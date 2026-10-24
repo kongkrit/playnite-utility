@@ -43,6 +43,11 @@
           <select id="source-filter"><option value="">&lt;NONE&gt;</option></select>
         </label>
         <input type="search" id="filter" placeholder="Filter by name">
+        <select id="hidden-filter" data-mode="status tag">
+          <option value="all">Show all</option>
+          <option value="hidden">Show hidden</option>
+          <option value="not-hidden">Show not hidden</option>
+        </select>
         <label data-mode="hide filter">Tag:
           <input type="search" id="tag-filter" placeholder="Filter by tag" size="12">
         </label>
@@ -92,8 +97,7 @@
       <strong>hides</strong> them, in a few clicks, then saves the result as a new CSV. The
       <strong>Filter</strong> tab instead splits the games into two CSVs. It runs only in this browser;
       nothing is uploaded. Games whose <span class="mono">Hidden</span> is <span class="mono">True</span>
-      appear only on <strong>Set Hidden</strong>, and on <strong>Filter</strong> while
-      <strong>Include hidden</strong> is ticked.
+      are left out of <strong>Filter</strong> unless <strong>Include hidden</strong> is ticked.
     </p>
     <ol>
       <li>Drop a Playnite export (from Library Exporter Advanced) on the box.</li>
@@ -111,6 +115,7 @@
         <span class="mono">games-matched_YYYYMMDD_HHMM.csv</span>, with every column of the dropped file.
         Nothing changes in Playnite, so there is no script.</li>
       <li data-mode="status tag hide">Narrow both lists with <strong>Filter by name</strong> and <strong>Source:</strong>. <strong>Filter by status</strong> narrows only the left list.</li>
+      <li data-mode="status tag"><strong>Show all</strong> can narrow both lists to hidden or not hidden games.</li>
       <li data-mode="status tag hide">Click a game on the left to mark it. Click a game on the right to undo<span data-mode="status tag">
         a mark you made</span><span data-mode="hide"> or un-hide it, even if it was hidden in the file</span>.
         Changed games are highlighted.</li>

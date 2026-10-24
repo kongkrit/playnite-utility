@@ -365,9 +365,14 @@ function wireDropzone(zoneId, inputId, onFile) {
     $('filter').focus();
   });
 
-  // Hidden games show only on Set Hidden, and on Filter while Include hidden is ticked.
+  // Set Hidden shows every game. Filter shows hidden ones only while Include hidden is ticked.
+  // The other two Set tabs follow the Show box.
   function shown(r) {
-    return r[col.hidden] !== 'True' || mode === 'hide' || (mode === 'filter' && $('include-hidden').checked);
+    const hidden = r[col.hidden] === 'True';
+    if (mode === 'hide') return true;
+    if (mode === 'filter') return !hidden || $('include-hidden').checked;
+    const show = $('hidden-filter').value;
+    return show === 'all' || (show === 'hidden' ? hidden : !hidden);
   }
 
   // The four filters. On the Set tabs bothOk (name, source) narrows both lists and otherOk
@@ -447,6 +452,7 @@ function wireDropzone(zoneId, inputId, onFile) {
   $('status-filter').addEventListener('change', render);
   $('source-filter').addEventListener('change', render);
   $('filter').addEventListener('input', render);
+  $('hidden-filter').addEventListener('change', render);
   $('tag-filter').addEventListener('input', render);
   $('include-hidden').addEventListener('change', render);
 
