@@ -15,6 +15,7 @@
       <button class="tab" data-tab="tag" role="tab" aria-selected="false">Set Tag</button>
       <button class="tab" data-tab="hide" role="tab" aria-selected="false">Set Hidden</button>
       <button class="tab" data-tab="filter" role="tab" aria-selected="false">Filter</button>
+      <button class="tab" data-tab="diff" role="tab" aria-selected="false">Diff</button>
     </nav>
     <button id="what" class="btn" title="What is this page?">
       <img src="assets/export.svg" alt="What?">
@@ -25,12 +26,22 @@
   </header>
 
   <main>
-    <div id="drop" class="dropzone" tabindex="0">
-      <input type="file" id="file" accept=".csv,text/csv" hidden>
-      <div class="dz-inner">
-        <div class="dz-icon">&#8681;</div>
-        <div class="dz-title">Drop your Playnite export here</div>
-        <div class="dz-sub">or click to choose a .csv file</div>
+    <div class="drops">
+      <div id="drop-other" class="dropzone" tabindex="0" hidden>
+        <input type="file" id="file-other" accept=".csv,text/csv" hidden>
+        <div class="dz-inner">
+          <div class="dz-icon">&#8681;</div>
+          <div class="dz-title">Diff against list: Drop another Playnite export here</div>
+          <div class="dz-sub">or click to choose a .csv file</div>
+        </div>
+      </div>
+      <div id="drop" class="dropzone" tabindex="0">
+        <input type="file" id="file" accept=".csv,text/csv" hidden>
+        <div class="dz-inner">
+          <div class="dz-icon">&#8681;</div>
+          <div class="dz-title"><span data-mode="diff">Working list: </span>Drop your Playnite export here</div>
+          <div class="dz-sub">or click to choose a .csv file</div>
+        </div>
       </div>
     </div>
 
@@ -45,7 +56,7 @@
           <select id="source-filter"><option value="">&lt;NONE&gt;</option></select>
         </label>
         <input type="search" id="filter" placeholder="Filter by name">
-        <select id="hidden-filter" data-mode="status tag">
+        <select id="hidden-filter" data-mode="status tag diff">
           <option value="all">Show all</option>
           <option value="hidden">Show hidden</option>
           <option value="not-hidden">Show not hidden</option>
@@ -54,7 +65,8 @@
           <input type="search" id="tag-filter" placeholder="Filter by tag" size="12">
         </label>
         <label data-mode="filter"><input type="checkbox" id="include-hidden"> Include hidden</label>
-        <span class="sep" aria-hidden="true" data-mode="status tag filter"></span>
+        <label data-mode="diff"><input type="checkbox" id="only-diff"> Show only diff</label>
+        <span class="sep" aria-hidden="true" data-mode="status tag filter diff"></span>
         <label data-mode="status">Target Completion Status
           <select id="target">
             <option>Abandoned</option>
@@ -74,18 +86,34 @@
         <button id="export" class="btn" data-mode="status tag hide">Export .csv</button>
         <button id="export-unmatched" class="btn" data-mode="filter">Export unmatched</button>
         <button id="export-matched" class="btn" data-mode="filter">Export matched</button>
+        <button id="export-left" class="btn" data-mode="diff">Export left</button>
+        <button id="export-right" class="btn" data-mode="diff">Export right</button>
       </div>
 
       <div id="lists" class="lists">
-        <section class="list">
+        <section class="list" data-mode="status tag hide filter">
           <h2 id="head-a"></h2>
           <div class="scroll"><table class="games"><tbody id="list-a"></tbody></table></div>
         </section>
-        <section class="list">
+        <section class="list" data-mode="status tag hide filter">
           <h2 id="head-b"></h2>
           <div class="scroll"><table class="games"><tbody id="list-b"></tbody></table></div>
         </section>
       </div>
+
+      <section class="list" data-mode="diff">
+        <div class="scroll">
+          <table class="diff">
+            <colgroup span="6"></colgroup>
+            <colgroup span="6" class="split"></colgroup>
+            <thead>
+              <tr><th colspan="6">Diff against list</th><th colspan="6">Working list</th></tr>
+              <tr id="diff-labels"></tr>
+            </thead>
+            <tbody id="diff-body"></tbody>
+          </table>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -97,12 +125,27 @@
     <p>
       It gives many games the same <strong>Completion Status</strong> or the same <strong>tag</strong>, or
       <strong>hides</strong> them, in a few clicks, then saves the result as a new CSV. The
-      <strong>Filter</strong> tab instead splits the games into two CSVs. It runs only in this browser;
+      <strong>Filter</strong> tab instead splits the games into two CSVs, and the <strong>Diff</strong> tab
+      lines them up against a second export and copies values between the two. It runs only in this browser;
       nothing is uploaded. Games whose <span class="mono">Hidden</span> is <span class="mono">True</span>
       are left out of <strong>Filter</strong> unless <strong>Include hidden</strong> is ticked.
     </p>
     <ol>
-      <li>Drop a Playnite export (from Library Exporter Advanced) on the box.</li>
+      <li data-mode="status tag hide filter">Drop a Playnite export (from Library Exporter Advanced) on the box.</li>
+      <li data-mode="diff">Drop two Playnite exports. The <strong>working list</strong>, the one the other tabs edit,
+        goes on the right box. The <strong>diff against list</strong>, such as an older export, goes on the left box.</li>
+      <li data-mode="diff">Each row shows one game from both lists side by side, matched by name and store, sorted
+        by name. Values that differ are in bold blue. A game in only one list reads <strong>Not in this list</strong>
+        on the other side.</li>
+      <li data-mode="diff">Click a game's left side to copy its Completion Status, Tags and Hidden to the right, or its
+        right side to copy them to the left. A game missing on the other side is copied whole, as a new row.
+        Changed values are highlighted.</li>
+      <li data-mode="diff"><strong>Filter by status</strong>, <strong>Source:</strong>, <strong>Filter by name</strong>
+        and <strong>Show all</strong> keep a row when either side passes. <strong>Show only diff</strong> keeps games
+        that differ, are in one list only, or that you changed.</li>
+      <li data-mode="diff">Click <strong>Export left</strong> or <strong>Export right</strong> to download
+        <span class="mono">games-diff-against_YYYYMMDD_HHMM.csv</span> or
+        <span class="mono">games-diff_YYYYMMDD_HHMM.csv</span>, with every column of that list.</li>
       <li data-mode="status">Pick the <strong>Target Completion Status</strong>.</li>
       <li data-mode="tag">Type the tag under <strong>Apply Tag</strong>.</li>
       <li data-mode="hide">Hidden games are on the right. <strong>Tag:</strong> narrows the left list to games
@@ -125,7 +168,7 @@
         data-mode="tag">tag</span><span data-mode="hide">hide</span>_YYYYMMDD_HHMM.csv</span>.</li>
     </ol>
 
-    <div data-mode="status tag hide">
+    <div data-mode="status tag hide diff">
     <h2>Import it back into Playnite</h2>
     <p>
       Playnite cannot import a CSV, so a short script in Playnite's built-in PowerShell console

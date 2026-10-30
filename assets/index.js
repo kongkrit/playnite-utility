@@ -2,6 +2,7 @@
  * On the three Set tabs, clicking a game moves it between list A (without the target) and
  * list B (with the target); the tab picks the target: a Completion Status, a tag, or hidden.
  * The Filter tab edits nothing: it splits games into unmatched (A) and matched (B).
+ * The Diff tab lines the working list up against a second export and copies values between them.
  */
 
 // ---------- CSV ----------
@@ -245,6 +246,12 @@ function wireDropzone(zoneId, inputId, onFile) {
   let original = [];  // a copy of each row as read from the file
   let col = {};       // column index per field; -1 when the file lacks that column
   let dirty = false;  // marks made since the last export
+  // Diff tab: the list to diff against, in the shape readList returns, and its unexported edits.
+  let other = null;
+  let otherDirty = false;
+  let pairs = null;   // [a, b] row indices of each game in other and rows; -1 when missing there
+  // The working list in the same shape as other, for code that handles either list.
+  const work = () => ({ header, rows, original, col });
 
   initTheme();
   initHelp();
@@ -336,48 +343,85 @@ function wireDropzone(zoneId, inputId, onFile) {
   function setMode(next) {
     mode = next;
     document.querySelectorAll('[data-mode]').forEach(el => { el.hidden = !el.dataset.mode.split(' ').includes(mode); });
+    showDrops();
     render();
   }
 
-  wireDropzone('drop', 'file', async file => {
+  // A drop box for each list the tab still needs, and the tab's controls and lists once it has them.
+  function showDrops() {
+    const needOther = mode === 'diff' && !other;
+    $('drop').hidden = header.length > 0;
+    $('drop-other').hidden = !needOther;
+    $('app').hidden = !header.length || needOther;
+  }
+
+  // Reads a dropped Playnite export into { header, rows, original, col }. On a problem it shows
+  // the error and returns nothing.
+  async function readList(file) {
     showError('error', '');
     if (!isCsvName(file.name)) return showError('error', 'Please choose a .csv file.');
     let text;
     try { text = await readFileText(file); } catch (e) { return showError('error', 'Could not read file: ' + e); }
 
     const all = parseCSV(text || '');
-    header = all[0] || [];
+    const names = all[0] || [];
     // The scripts identify a game by name plus store, so these two are required.
-    if (!header.includes('Name') || !header.includes('Sources')) {
+    if (!names.includes('Name') || !names.includes('Sources')) {
       return showError('error', 'The file needs "Name" and "Sources" columns.');
     }
 
     // Columns the tabs edit are added, empty, when missing. Rows are padded so every cell exists.
-    for (const m of Object.values(MODES)) if (m.column && !header.includes(m.column)) header.push(m.column);
-    rows = all.slice(1).filter(r => !(r.length === 1 && r[0] === '')); // stray blank lines
-    for (const r of rows) while (r.length < header.length) r.push('');
-    original = rows.map(r => [...r]);
-    col = {
-      name: header.indexOf('Name'),
-      source: header.indexOf('Sources'),
-      time: header.indexOf('Time Played'),
-      status: header.indexOf(MODES.status.column),
-      tags: header.indexOf(MODES.tag.column),
-      hidden: header.indexOf(MODES.hide.column),
+    for (const m of Object.values(MODES)) if (m.column && !names.includes(m.column)) names.push(m.column);
+    const data = all.slice(1).filter(r => !(r.length === 1 && r[0] === '')); // stray blank lines
+    for (const r of data) while (r.length < names.length) r.push('');
+    return { header: names, rows: data, original: data.map(r => [...r]), col: colsOf(names) };
+  }
+
+  function colsOf(names) {
+    return {
+      name: names.indexOf('Name'),
+      source: names.indexOf('Sources'),
+      time: names.indexOf('Time Played'),
+      status: names.indexOf(MODES.status.column),
+      tags: names.indexOf(MODES.tag.column),
+      hidden: names.indexOf(MODES.hide.column),
     };
-    // Runs once per page load, as the dropzone hides after a successful drop.
-    const sources = [...new Set(rows.map(r => r[col.source]))].filter(Boolean).sort();
-    for (const s of sources) $('source-filter').add(new Option(s));
-    $('drop').hidden = true;
-    $('app').hidden = false;
+  }
+
+  // Source choices: the stores in both lists. The current choice is kept.
+  function fillSources() {
+    const sel = $('source-filter');
+    const keep = sel.value;
+    const stores = new Set([work(), other].filter(Boolean).flatMap(l => l.rows.map(r => r[l.col.source])));
+    sel.replaceChildren(sel.options[0], ...[...stores].filter(Boolean).sort().map(s => new Option(s)));
+    sel.value = keep;
+  }
+
+  // After a list loads: Diff pairs the games again, and Source lists the stores of both lists.
+  function loaded() {
+    pairs = null;
+    fillSources();
+    showDrops();
     render();
     $('filter').focus();
+  }
+
+  wireDropzone('drop', 'file', async file => {
+    const list = await readList(file);
+    if (!list) return;
+    ({ header, rows, original, col } = list);
+    loaded();
+  });
+
+  wireDropzone('drop-other', 'file-other', async file => {
+    other = await readList(file);
+    if (other) loaded();
   });
 
   // Set Hidden shows every game. Filter shows hidden ones only while Include hidden is ticked.
-  // The other two Set tabs follow the Show box.
-  function shown(r) {
-    const hidden = r[col.hidden] === 'True';
+  // The other two Set tabs and Diff follow the Show box. c: the row's column map.
+  function shown(r, c = col) {
+    const hidden = r[c.hidden] === 'True';
     if (mode === 'hide') return true;
     if (mode === 'filter') return !hidden || $('include-hidden').checked;
     const show = $('hidden-filter').value;
@@ -385,19 +429,26 @@ function wireDropzone(zoneId, inputId, onFile) {
   }
 
   // The four filters. On the Set tabs bothOk (name, source) narrows both lists and otherOk
-  // (status, tag) only list A. On Filter a game is matched when it passes all four.
-  function filters() {
+  // (status, tag) only list A. On Filter a game is matched when it passes all four, and on Diff a
+  // side passes when it does (Tag: is off there). c: the column map of the rows being tested.
+  function filters(c = col) {
     const q = $('filter').value.trim().toLowerCase();
     const sf = $('status-filter').value; // '' for <NONE>
     const src = $('source-filter').value; // '' for <NONE>
     const tf = mode === 'hide' || mode === 'filter' ? $('tag-filter').value.trim().toLowerCase() : '';
-    const bothOk = r => (!q || r[col.name].toLowerCase().includes(q)) && (!src || r[col.source] === src);
-    const otherOk = r => (!sf || r[col.status] === sf) && (!tf || r[col.tags].toLowerCase().includes(tf));
+    const bothOk = r => (!q || r[c.name].toLowerCase().includes(q)) && (!src || r[c.source] === src);
+    const otherOk = r => (!sf || r[c.status] === sf) && (!tf || r[c.tags].toLowerCase().includes(tf));
     return { bothOk, otherOk, matches: r => bothOk(r) && otherOk(r) };
+  }
+
+  function hoursText(seconds) {
+    const hours = seconds / 3600; // Time Played is in seconds; NaN when the column is missing
+    return hours ? hours.toFixed(1) + ' h' : '';
   }
 
   function render() {
     if ($('app').hidden) return; // no file yet
+    if (mode === 'diff') return renderDiff();
     const m = MODES[mode];
     const c = header.indexOf(m.column); // -1 on Filter
     const t = m.target();
@@ -423,8 +474,7 @@ function wireDropzone(zoneId, inputId, onFile) {
       const tr = document.createElement('tr');
       tr.dataset.i = i;
       tr.classList.toggle('changed', isChanged);
-      const hours = r[col.time] / 3600; // Time Played is in seconds; NaN when the column is missing
-      const cells = [r[col.name], r[col.source], hours ? hours.toFixed(1) + ' h' : '', m.cell(v, orig, r)];
+      const cells = [r[col.name], r[col.source], hoursText(r[col.time]), m.cell(v, orig, r)];
       for (const text of cells) tr.insertCell().textContent = text ?? '';
       (inB ? b : a).append(tr);
     });
@@ -451,9 +501,122 @@ function wireDropzone(zoneId, inputId, onFile) {
     rows[i][c] = next;
     dirty = true;
     render();
-    // Back to the filter with its text selected, so typing the next name replaces it.
+    refocusFilter();
+  });
+
+  // Back to the filter with its text selected, so typing the next name replaces it.
+  function refocusFilter() {
     $('filter').focus({ preventScroll: true });
     $('filter').select();
+  }
+
+  // ---------- Diff tab ----------
+  // Side a (left) is the diff against list, side b (right) the working list. DIFF_KEYS are the
+  // columns compared and copied; DIFF_SHOW the columns shown on each side, with their labels.
+  const DIFF_KEYS = ['status', 'tags', 'hidden'];
+  const DIFF_SHOW = [['name', 'Name'], ['hidden', 'Hidden'], ['status', 'Completion Status'],
+                     ['time', 'Time Played'], ['source', 'Sources'], ['tags', 'Tags']];
+  $('diff-labels').append(...[...DIFF_SHOW, ...DIFF_SHOW].map(([, label]) =>
+    Object.assign(document.createElement('th'), { textContent: label })));
+
+  // Tags in another order are the same tags.
+  function same(k, x, y) {
+    const norm = v => (k === 'tags' ? tagList(v).sort().join(TAG_SEP) : v);
+    return norm(x) === norm(y);
+  }
+
+  // Pairs each game in other with the same game in rows, sorted by name, then store. A game
+  // matches by name, ignoring case and outer spaces, plus store: the What? script's rule. The
+  // n-th copy of a game in one list pairs with the n-th copy in the other.
+  function pairUp() {
+    function keys(l) {
+      const seen = new Map();
+      return l.rows.map(r => {
+        const k = r[l.col.name].trim().toLowerCase() + '|' + r[l.col.source];
+        seen.set(k, (seen.get(k) || 0) + 1);
+        return k + '#' + seen.get(k);
+      });
+    }
+    const inRows = new Map(keys(work()).map((k, j) => [k, j]));
+    const found = keys(other).map((k, i) => {
+      const j = inRows.get(k) ?? -1;
+      inRows.delete(k);
+      return [i, j];
+    });
+    for (const j of inRows.values()) found.push([-1, j]);
+    const nameAndStore = ([i, j]) => {
+      const [r, c] = i < 0 ? [rows[j], col] : [other.rows[i], other.col];
+      return [r[c.name], r[c.source]];
+    };
+    return found.sort((p, q) => {
+      const [[n1, s1], [n2, s2]] = [nameAndStore(p), nameAndStore(q)];
+      return n1.localeCompare(n2) || s1.localeCompare(s2);
+    });
+  }
+
+  // One row per shown pair, both sides side by side. differs: a compared value unlike the other
+  // side's. changed: a value unlike the one in its file; a row added here has an empty file row.
+  function renderDiff() {
+    pairs ??= pairUp();
+    const lists = [other, work()];
+    const fs = lists.map(l => filters(l.col));
+    const body = document.createDocumentFragment();
+    pairs.forEach((pair, p) => {
+      // Each side's column map, row, and row as read from its file; null when missing there.
+      const sides = pair.map((i, s) => (i < 0 ? null
+        : { c: lists[s].col, r: lists[s].rows[i], o: lists[s].original[i] }));
+      const [a, b] = sides;
+      const differs = k => a !== null && b !== null && !same(k, a.r[a.c[k]], b.r[b.c[k]]);
+      const edited = x => x !== null && DIFF_SHOW.some(([k]) => x.r[x.c[k]] !== x.o[x.c[k]]);
+      if (!sides.some((x, s) => x && shown(x.r, x.c) && fs[s].matches(x.r))) return;
+      if ($('only-diff').checked && a && b && !DIFF_KEYS.some(differs) && !sides.some(edited)) return;
+
+      const tr = body.appendChild(document.createElement('tr'));
+      tr.dataset.p = p;
+      sides.forEach((x, s) => {
+        if (!x) {
+          const td = tr.insertCell();
+          td.colSpan = DIFF_SHOW.length;
+          td.className = 'missing';
+          td.textContent = 'Not in this list';
+          return;
+        }
+        for (const [k] of DIFF_SHOW) {
+          const td = tr.insertCell();
+          const v = x.r[x.c[k]];
+          td.textContent = k === 'time' ? hoursText(v) : v ?? '';
+          td.dataset.side = s;
+          td.classList.toggle('differs', DIFF_KEYS.includes(k) && differs(k));
+          td.classList.toggle('changed', v !== x.o[x.c[k]]);
+        }
+      });
+    });
+    $('diff-body').replaceChildren(body);
+  }
+
+  // A click copies the clicked side to the other: the compared columns, or the whole game as a
+  // new row when the other list lacks it, each of its columns filled from the same-named one.
+  $('diff-body').addEventListener('click', e => {
+    const td = e.target.closest('td');
+    if (!td || !td.dataset.side) return; // the "Not in this list" side has nothing to copy
+    const s = +td.dataset.side;
+    const pair = pairs[+td.parentElement.dataset.p];
+    const [from, to] = s ? [work(), other] : [other, work()];
+    const r = from.rows[pair[s]];
+    if (pair[1 - s] < 0) {
+      to.rows.push(to.header.map(h => r[from.header.indexOf(h)] ?? ''));
+      to.original.push(to.header.map(() => ''));
+      pair[1 - s] = to.rows.length - 1;
+    } else {
+      const t = to.rows[pair[1 - s]];
+      const keys = DIFF_KEYS.filter(k => !same(k, t[to.col[k]], r[from.col[k]]));
+      if (!keys.length) return;
+      for (const k of keys) t[to.col[k]] = r[from.col[k]];
+    }
+    if (s) otherDirty = true;
+    else dirty = true;
+    render();
+    refocusFilter();
   });
 
   $('target').addEventListener('change', render);
@@ -464,12 +627,21 @@ function wireDropzone(zoneId, inputId, onFile) {
   $('hidden-filter').addEventListener('change', render);
   $('tag-filter').addEventListener('input', render);
   $('include-hidden').addEventListener('change', render);
+  $('only-diff').addEventListener('change', render);
 
-  $('export').addEventListener('click', () => {
+  // The working list: Export .csv on the Set tabs, Export right on Diff.
+  function exportWorking() {
     const name = 'games-' + mode + '_' + timestamp() + '.csv';
     download(name, toCSV([header, ...rows]), 'text/csv;charset=utf-8');
     $('ps-path').placeholder = 'Full path of ' + name;
     dirty = false;
+  }
+  $('export').addEventListener('click', exportWorking);
+  $('export-right').addEventListener('click', exportWorking);
+  $('export-left').addEventListener('click', () => {
+    const name = 'games-diff-against_' + timestamp() + '.csv';
+    download(name, toCSV([other.header, ...other.rows]), 'text/csv;charset=utf-8');
+    otherDirty = false;
   });
 
   // Filter tab: the same split as its two lists. It leaves dirty alone, as it saves only some rows.
@@ -482,5 +654,5 @@ function wireDropzone(zoneId, inputId, onFile) {
   $('export-unmatched').addEventListener('click', () => exportSplit(false));
   $('export-matched').addEventListener('click', () => exportSplit(true));
 
-  window.addEventListener('beforeunload', e => { if (dirty) e.preventDefault(); });
+  window.addEventListener('beforeunload', e => { if (dirty || otherDirty) e.preventDefault(); });
 })();

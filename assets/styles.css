@@ -123,6 +123,9 @@ main {
   background: var(--accent-soft);
 }
 
+/* Diff's two drop boxes side by side; a hidden one leaves the row to the other. */
+.drops { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 1rem; }
+
 .dz-icon { font-size: 2rem; line-height: 1; color: var(--accent); }
 .dz-title { font-weight: 600; margin-top: 8px; }
 .dz-sub { color: var(--muted); font-size: 0.875rem; }
@@ -186,14 +189,14 @@ main {
   overflow: auto;
 }
 
-.games {
+.games, .diff {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
   cursor: pointer;
 }
 
-.games td {
+.games td, .diff td, .diff th {
   padding: 4px 12px;
   border-bottom: 1px solid var(--border);
 }
@@ -201,7 +204,15 @@ main {
 .games td + td { color: var(--muted); white-space: nowrap; }
 
 .changed { background: var(--warn-soft); }
-.games tr:hover { background: var(--accent-soft); }
+.games tr:hover, .diff tr:hover { background: var(--accent-soft); }
+
+/* Diff: one table, so each game's two sides line up. The header stays in view while the rows
+   scroll, and a line splits the two lists. */
+.diff thead { position: sticky; top: 0; }
+.diff th { text-align: left; background: var(--surface); }
+.split { border-left: 2px solid var(--border); }
+.differs { font-weight: 600; color: var(--accent); }
+.missing { color: var(--muted); }
 
 .help {
   width: min(47.5rem, 100% - 2rem);
