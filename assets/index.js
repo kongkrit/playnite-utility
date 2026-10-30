@@ -40,9 +40,11 @@ function csvField(v) {
   return /["',\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
 }
 
+function csvRow(r) { return r.map(csvField).join(','); }
+
 // Writes CRLF + UTF-8 BOM to mirror a Playnite export.
 function toCSV(rows) {
-  return '﻿' + rows.map(r => r.map(csvField).join(',')).join('\r\n') + '\r\n';
+  return '﻿' + rows.map(csvRow).join('\r\n') + '\r\n';
 }
 
 function timestamp(d = new Date()) {
@@ -83,26 +85,18 @@ function readFileText(file) {
 
 function isCsvName(name) { return /\.csv$/i.test(name); }
 
-// --- theme ---
+// --- theme: starts from the system's light or dark setting; the button flips it ---
 function initTheme() {
-  const THEME_KEY = 'playnite-utility-theme';
-  const THEMES = ['system', 'light', 'dark'];
-  function getTheme() {
-    try { const t = localStorage.getItem(THEME_KEY); return THEMES.includes(t) ? t : 'system'; }
-    catch { return 'system'; }
-  }
+  const ICONS = { light: 'sun.svg', dark: 'moon.svg' };
   function applyTheme(t) {
-    if (t === 'system') document.documentElement.removeAttribute('data-theme');
-    else document.documentElement.setAttribute('data-theme', t);
-    const label = t.charAt(0).toUpperCase() + t.slice(1);
-    $('theme-label').textContent = label;
+    document.documentElement.dataset.theme = t;
+    $('theme-icon').src = 'assets/' + ICONS[t];
+    $('theme-icon').alt = t.charAt(0).toUpperCase() + t.slice(1);
     $('theme-toggle').title = 'Theme: ' + t + ' (click to change)';
   }
-  applyTheme(getTheme());
+  applyTheme(matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   $('theme-toggle').addEventListener('click', () => {
-    const next = THEMES[(THEMES.indexOf(getTheme()) + 1) % THEMES.length];
-    try { localStorage.setItem(THEME_KEY, next); } catch { /* ignore */ }
-    applyTheme(next);
+    applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
   });
 }
 
@@ -258,13 +252,14 @@ function wireDropzone(zoneId, inputId, onFile) {
   setMode(mode);
 
   // The What? script: one CSV lookup and game loop, plus a block per ticked box from MODES.
+  // load: the PowerShell that reads the rows, from a file or from psPageRows.
   // keys: the ticked tabs, e.g. ['status', 'tag']. A game is saved only if a block changed it.
-  function psScript(path, keys, tags) {
+  function psScript(load, keys, tags) {
     const ms = keys.map(k => MODES[k]);
     return [
       `# ===== Applies ${ms.map(m => m.column).join(', ')} from the CSV to Playnite =====`,
       '',
-      `$rows = Import-Csv -Encoding UTF8 ${psQuote(path)}`,
+      `$rows = ${load}`,
       `$want = @{}`,
       `foreach ($r in $rows) {`,
       `    $want["$($r.Name.Trim().ToLower())|$($r.Sources)"] = $r`,
@@ -283,21 +278,35 @@ function wireDropzone(zoneId, inputId, onFile) {
     ].join('\n') + '\n'; // the final newline runs the last line on paste, no Enter needed
   }
 
+  // The page's rows as a CSV block inside the script, so it runs with no export. It keeps only
+  // Name and Sources, which find each game, and the ticked columns, so the paste stays small.
+  // A single-quoted here-string (@'...'@, a multi-line literal) ends only at a line starting
+  // with '@, and csvField quotes any field holding a ', so no row can end it early.
+  function psPageRows(keys) {
+    const cs = ['Name', 'Sources', ...keys.map(k => MODES[k].column)].map(c => header.indexOf(c));
+    const lines = [header, ...rows].map(r => csvRow(cs.map(c => r[c])));
+    return [`@'`, ...lines, `'@ | ConvertFrom-Csv`].join('\n');
+  }
+
   const SET_KEYS = ['status', 'tag', 'hide'];
 
   // Shows the script for the What? boxes, or a hint while they are not filled in enough.
   function updateScript() {
+    const fromCsv = $('ps-from-csv').checked;
     const path = $('ps-path').value.trim().replace(/^"(.*)"$/, '$1'); // Copy as path adds quotes
     const keys = SET_KEYS.filter(k => $('ps-' + k).checked);
     const tags = $('ps-tags').value.split(',').map(s => s.trim()).filter(Boolean);
-    const hint = !path ? 'Paste the path of the exported CSV above.'
+    const hint = fromCsv && !path ? 'Paste the path of the exported CSV above.'
+      : !fromCsv && !rows.length ? 'Drop a Playnite export on the page first.'
       : !keys.length ? 'Tick at least one box above.'
       : keys.includes('tag') && !tags.length ? 'Type a tag next to Add tags.'
       : '';
-    $('script').textContent = hint || psScript(path, keys, tags);
+    const load = fromCsv ? `Import-Csv -Encoding UTF8 ${psQuote(path)}` : psPageRows(keys);
+    $('ps-path').closest('label').hidden = !fromCsv;
+    $('script').textContent = hint || psScript(load, keys, tags);
     $('copy-script').disabled = !!hint;
   }
-  for (const id of ['ps-path', 'ps-status', 'ps-tag', 'ps-tags', 'ps-hide']) $(id).addEventListener('input', updateScript);
+  document.querySelectorAll('.ps-options input').forEach(el => el.addEventListener('input', updateScript));
 
   // Runs after initHelp's listener has opened the dialog. Ticks the box of each column changed
   // on this page, or the current tab's when none changed, and lists the tags added on this page.

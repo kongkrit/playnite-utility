@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Playnite Utility</title>
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
   <header class="topbar">
@@ -16,9 +16,11 @@
       <button class="tab" data-tab="hide" role="tab" aria-selected="false">Set Hidden</button>
       <button class="tab" data-tab="filter" role="tab" aria-selected="false">Filter</button>
     </nav>
-    <button id="what" class="btn">What?</button>
-    <button id="theme-toggle" class="btn theme-toggle" title="Theme: system">
-      <span id="theme-label">System</span>
+    <button id="what" class="btn" title="What is this page?">
+      <img src="assets/export.svg" alt="What?">
+    </button>
+    <button id="theme-toggle" class="btn theme-toggle">
+      <img id="theme-icon" src="assets/sun.svg" alt="Light">
     </button>
   </header>
 
@@ -137,11 +139,17 @@
         console opens, Playnite puts commands on the clipboard that load <span class="mono">$PlayniteApi</span>,
         the script's link to your library. Do this before you copy the script, because copying replaces
         those commands. If they're gone, close the console and open it again.</li>
-      <li>Fill in the boxes below, then click <strong>Copy</strong>, paste the script into the console, and
-        press Enter. To get the path, right-click the file in File Explorer and choose
+      <li>Under <strong>Import from</strong>, pick <strong>current content</strong> to apply the games as this page
+        shows them, with no export, or <strong>a .csv</strong> to apply a file you exported. Fill in the boxes
+        below, then click <strong>Copy</strong>, paste the script into the console, and press Enter. For
+        <strong>a .csv</strong>, get the path by right-clicking the file in File Explorer and choosing
         <strong>Copy as path</strong> (Windows 10: Shift+right-click).</li>
     </ol>
     <div class="ps-options">
+      <span>Import from
+        <label><input type="radio" name="ps-from" id="ps-from-csv"> a .csv</label>
+        <label><input type="radio" name="ps-from" id="ps-from-page" checked> current content</label>
+      </span>
       <label class="ps-path">Exported CSV file <input id="ps-path" placeholder="Full path of the exported .csv"></label>
       <label><input type="checkbox" id="ps-status"> Set Completion Status</label>
       <label><input type="checkbox" id="ps-tag"> Add tags <input id="ps-tags" placeholder="RPG, Co-op"></label>
@@ -164,7 +172,7 @@
         ticked fields, and only where they differ, so running it twice is safe.</li>
       <li>The last line reports counts. <strong>matched 0</strong> means
         <span class="mono">$PlayniteApi</span> wasn't loaded: redo step 3. <strong>matched</strong> should be
-        close to <strong>rows</strong> (the CSV's games); much lower means names or stores don't match. If Playnite hasn't
+        close to <strong>rows</strong> (the games in the CSV, or on this page); much lower means names or stores don't match. If Playnite hasn't
         changed since the export you dropped here, <strong>status</strong>, <strong>tagged</strong> and
         <strong>hidden</strong> should equal the "changed" count each tab showed.</li>
     </ul>
@@ -173,6 +181,6 @@
     <form method="dialog"><button class="btn">Dismiss</button></form>
   </dialog>
 
-  <script src="index.js"></script>
+  <script src="assets/index.js"></script>
 </body>
 </html>

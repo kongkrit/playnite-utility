@@ -1,5 +1,5 @@
 /* Each color is light-dark(light theme, dark theme). color-scheme picks the side: the system
-   setting by default, or the theme button's choice through data-theme. It also themes native
+   setting until the script runs, then the theme button's choice through data-theme. It also themes native
    parts such as checkboxes, dropdown lists and scrollbars. */
 :root {
   color-scheme: light dark;
@@ -87,8 +87,14 @@ button, input, select {
 }
 
 .theme-toggle {
-  min-width: 84px;
   margin-left: auto;
+}
+
+/* 1.5em = one line of button text, so an icon button is as tall as a text button. */
+.btn img {
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: top;
 }
 
 main {
@@ -228,6 +234,7 @@ main {
 .ps-options { display: grid; gap: 0.5rem; justify-items: start; margin: 1rem 0; }
 .ps-path { justify-self: stretch; display: flex; align-items: center; gap: 0.5rem; }
 .ps-path input { flex: 1; }
+.ps-path[hidden] { display: none; } /* display: flex above would override hidden */
 
 /* Grey block with the Copy button on its own strip at the top right, above the code. */
 .code {
@@ -240,10 +247,12 @@ main {
 
 .code .btn { padding: 2px 10px; font-size: 0.8125rem; }
 
+/* Capped, because a script built from the page's content holds every game. */
 .help pre {
   margin: 0;
   padding: 0 6px 10px;
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 30rem;
   text-align: left;
 }
 

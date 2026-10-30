@@ -68,11 +68,15 @@ Goal: as simple as possible, without saying anything false.
 - `.claude/PROGRESS.md` — session handoff maintained by `/wrapup`.
 - `.gitignore`, `.gitattributes` — ignore rules; LF line endings (CRLF kept for `*.csv`) and binary file types.
 - `README.md`, `LICENSE` — human-facing overview and license.
+- `index.html` — the Playnite Utility page. Users open it by double-clicking, so it runs from `file://` with no server.
+- `assets/` — files the page loads: `index.js`, `styles.css`, `icon.svg` (tab icon), `export.svg` (What? button icon), `sun.svg`, `moon.svg` (theme button icons).
+- `playnite-utility.ico` — `assets/icon.svg` as a Windows icon; stays at the root.
 
 ## Conventions
 
 - LF line endings everywhere except `*.csv`, which keep CRLF because they're Playnite (Windows) exports; never introduce CRLF elsewhere.
 - New languages or toolchains extend `.gitignore` and `.gitattributes` — no parallel ignore files. Keep new entries consistent with existing ones.
+- The page must work from `file://`: load other files only with plain `<link>`, `<script>` and `<img>`. `fetch`, CSS `mask-image` and an external SVG `<use>` can be blocked there.
 - As the template becomes a real project, add build, test, and run commands here.
 
 ## Development environment
