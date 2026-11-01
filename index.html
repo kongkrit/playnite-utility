@@ -31,7 +31,7 @@
         <input type="file" id="file-other" accept=".csv,text/csv" hidden>
         <div class="dz-inner">
           <div class="dz-icon">&#8681;</div>
-          <div class="dz-title">Diff against list: Drop another Playnite export here</div>
+          <div class="dz-title">Diff against (left) list: Drop another Playnite export here</div>
           <div class="dz-sub">or click to choose a .csv file</div>
         </div>
       </div>
@@ -39,7 +39,7 @@
         <input type="file" id="file" accept=".csv,text/csv" hidden>
         <div class="dz-inner">
           <div class="dz-icon">&#8681;</div>
-          <div class="dz-title"><span data-mode="diff">Working list: </span>Drop your Playnite export here</div>
+          <div class="dz-title"><span data-mode="diff">Working (right) list: </span>Drop your Playnite export here</div>
           <div class="dz-sub">or click to choose a .csv file</div>
         </div>
       </div>
@@ -64,7 +64,7 @@
         <label data-mode="hide filter">Tag:
           <input type="search" id="tag-filter" placeholder="Filter by tag" size="12">
         </label>
-        <label data-mode="filter"><input type="checkbox" id="include-hidden"> Include hidden</label>
+        <label data-mode="filter"><input type="checkbox" id="include-hidden" checked> Include hidden</label>
         <label data-mode="diff"><input type="checkbox" id="only-diff"> Show only diff</label>
         <label data-mode="diff"><input type="checkbox" id="compare-time" checked> Compare time played</label>
         <span class="sep" aria-hidden="true" data-mode="status tag filter"></span>
@@ -107,8 +107,8 @@
             <colgroup span="6" class="split"></colgroup>
             <thead>
               <tr>
-                <th colspan="6"><button id="export-left" class="btn">Export diff against list</button></th>
-                <th colspan="6"><button id="export-right" class="btn">Export working list</button></th>
+                <th colspan="6"><button id="export-left" class="btn">Export diff against (left) list</button></th>
+                <th colspan="6"><button id="export-right" class="btn">Export working (right) list</button></th>
               </tr>
               <tr id="diff-labels"></tr>
             </thead>
@@ -148,7 +148,7 @@
       <li data-mode="diff"><strong>Filter by status</strong>, <strong>Source:</strong>, <strong>Filter by name</strong>
         and <strong>Show all</strong> keep a row when either side passes. <strong>Show only diff</strong> keeps games
         that differ, are in one list only, or that you changed.</li>
-      <li data-mode="diff">Click <strong>Export diff against list</strong> or <strong>Export working list</strong>,
+      <li data-mode="diff">Click <strong>Export diff against (left) list</strong> or <strong>Export working (right) list</strong>,
         above each side, to download
         <span class="mono">games-diff-against_YYYYMMDD_HHMM.csv</span> or
         <span class="mono">games-diff_YYYYMMDD_HHMM.csv</span>, with every column of that list.</li>
@@ -159,8 +159,9 @@
       <li data-mode="filter">Set any of <strong>Filter by status</strong>, <strong>Source:</strong>,
         <strong>Filter by name</strong> and <strong>Tag:</strong>. Games that pass all of them are <strong>MATCHED</strong>, on the right; empty
         filters match everything. The rest are <strong>Unmatched</strong>.</li>
-      <li data-mode="filter">Games whose <span class="mono">Hidden</span> is <span class="mono">True</span> are
-        left out of both lists and both exports. Tick <strong>Include hidden</strong> to include them.</li>
+      <li data-mode="filter"><strong>Include hidden</strong>, ticked at the start, keeps games whose
+        <span class="mono">Hidden</span> is <span class="mono">True</span>. Untick it to leave them out of both lists
+        and both exports.</li>
       <li data-mode="filter">Click <strong>Export unmatched</strong> or <strong>Export matched</strong> to download
         <span class="mono">games-unmatched_YYYYMMDD_HHMM.csv</span> or
         <span class="mono">games-matched_YYYYMMDD_HHMM.csv</span>, with every column of the dropped file.

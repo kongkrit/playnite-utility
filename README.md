@@ -216,7 +216,7 @@ Next to **Filter by name**, the **Tag:** box narrows only the left list, like **
 
 The **Filter** tab changes nothing. It splits the games into two lists by the filters on its line: **Filter by status**, **Source:**, **Filter by name**, and **Tag:**, which works as on **Set Hidden**. A game that passes all four is **MATCHED**, on the right. The rest are **Unmatched**, on the left. Empty filters match everything, so with no filters set, **Unmatched** is empty. Each row shows the game's status and tags. Clicking a game does nothing.
 
-**Include hidden** is unticked by default, so games whose `Hidden` is `True` are left out of both lists and both exports. Tick it to include them.
+**Include hidden** is ticked by default, so games whose `Hidden` is `True` are in both lists and both exports like any other. Untick it to leave them out.
 
 **Export unmatched** and **Export matched** download `games-unmatched_YYYYMMDD_HHMM.csv` and `games-matched_YYYYMMDD_HHMM.csv`. Each holds exactly the games in its list, in file order, with every column of the dropped file and any edits made on the other tabs. Filter changes nothing in Playnite, so What? on this tab has no script.
 
@@ -229,7 +229,7 @@ The **Diff** tab compares the working list, the export the other tabs edit, with
 3. `Completion Status`, `Tags`, and `Hidden` values that differ between the sides are bold blue. The same tags in another order count as the same. **Compare time played**, ticked at the start, compares `Time Played` too, in the hours shown, so times that show the same hours count as the same. Untick it to ignore play time.
 4. Click a game's left side to copy its `Completion Status`, `Tags`, and `Hidden` to the right, or its right side to copy them to the left. While **Compare time played** is ticked, `Time Played` is copied too. The What? script doesn't apply it, so it changes only the CSV. If the other list lacks the game, the whole game is added to the end of that list. Each of that list's columns is filled from the column with the same name, or left empty. Values that differ from their file are highlighted in amber.
 
-**Filter by status**, **Source:**, **Filter by name**, and **Show all** keep a row when either side passes. **Show only diff** keeps games that differ, are in only one list, or that you changed. **Export diff against list**, above the left side, downloads the diff against list as `games-diff-against_YYYYMMDD_HHMM.csv`, and **Export working list**, above the right side, downloads the working list as `games-diff_YYYYMMDD_HHMM.csv`, each with all its columns. Changes to the working list also show on the other tabs. If you close the tab with changes to either list that you haven't exported, the browser asks before closing.
+**Filter by status**, **Source:**, **Filter by name**, and **Show all** keep a row when either side passes. **Show only diff** keeps games that differ, are in only one list, or that you changed. **Export diff against (left) list**, above the left side, downloads the diff against list as `games-diff-against_YYYYMMDD_HHMM.csv`, and **Export working (right) list**, above the right side, downloads the working list as `games-diff_YYYYMMDD_HHMM.csv`, each with all its columns. Changes to the working list also show on the other tabs. If you close the tab with changes to either list that you haven't exported, the browser asks before closing.
 
 ### Apply the changes in Playnite
 
