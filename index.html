@@ -66,7 +66,8 @@
         </label>
         <label data-mode="filter"><input type="checkbox" id="include-hidden"> Include hidden</label>
         <label data-mode="diff"><input type="checkbox" id="only-diff"> Show only diff</label>
-        <span class="sep" aria-hidden="true" data-mode="status tag filter diff"></span>
+        <label data-mode="diff"><input type="checkbox" id="compare-time" checked> Compare time played</label>
+        <span class="sep" aria-hidden="true" data-mode="status tag filter"></span>
         <label data-mode="status">Target Completion Status
           <select id="target">
             <option>Abandoned</option>
@@ -86,8 +87,6 @@
         <button id="export" class="btn" data-mode="status tag hide">Export .csv</button>
         <button id="export-unmatched" class="btn" data-mode="filter">Export unmatched</button>
         <button id="export-matched" class="btn" data-mode="filter">Export matched</button>
-        <button id="export-left" class="btn" data-mode="diff">Export left</button>
-        <button id="export-right" class="btn" data-mode="diff">Export right</button>
       </div>
 
       <div id="lists" class="lists">
@@ -107,7 +106,10 @@
             <colgroup span="6"></colgroup>
             <colgroup span="6" class="split"></colgroup>
             <thead>
-              <tr><th colspan="6">Diff against list</th><th colspan="6">Working list</th></tr>
+              <tr>
+                <th colspan="6"><button id="export-left" class="btn">Export diff against list</button></th>
+                <th colspan="6"><button id="export-right" class="btn">Export working list</button></th>
+              </tr>
               <tr id="diff-labels"></tr>
             </thead>
             <tbody id="diff-body"></tbody>
@@ -140,10 +142,14 @@
       <li data-mode="diff">Click a game's left side to copy its Completion Status, Tags and Hidden to the right, or its
         right side to copy them to the left. A game missing on the other side is copied whole, as a new row.
         Changed values are highlighted.</li>
+      <li data-mode="diff"><strong>Compare time played</strong>, ticked at the start, compares Time Played too, in
+        the hours shown, and a click copies it with the rest. The script below doesn't apply Time Played, so a
+        copied one changes only the CSV. Untick it to ignore play time.</li>
       <li data-mode="diff"><strong>Filter by status</strong>, <strong>Source:</strong>, <strong>Filter by name</strong>
         and <strong>Show all</strong> keep a row when either side passes. <strong>Show only diff</strong> keeps games
         that differ, are in one list only, or that you changed.</li>
-      <li data-mode="diff">Click <strong>Export left</strong> or <strong>Export right</strong> to download
+      <li data-mode="diff">Click <strong>Export diff against list</strong> or <strong>Export working list</strong>,
+        above each side, to download
         <span class="mono">games-diff-against_YYYYMMDD_HHMM.csv</span> or
         <span class="mono">games-diff_YYYYMMDD_HHMM.csv</span>, with every column of that list.</li>
       <li data-mode="status">Pick the <strong>Target Completion Status</strong>.</li>

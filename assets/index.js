@@ -370,8 +370,10 @@ function wireDropzone(zoneId, inputId, onFile) {
       return showError('error', 'The file needs "Name" and "Sources" columns.');
     }
 
-    // Columns the tabs edit are added, empty, when missing. Rows are padded so every cell exists.
-    for (const m of Object.values(MODES)) if (m.column && !names.includes(m.column)) names.push(m.column);
+    // Columns the tabs edit are added, empty, when missing; Diff can copy Time Played. Rows are
+    // padded so every cell exists.
+    const edited = [...Object.values(MODES).map(m => m.column).filter(Boolean), 'Time Played'];
+    for (const c of edited) if (!names.includes(c)) names.push(c);
     const data = all.slice(1).filter(r => !(r.length === 1 && r[0] === '')); // stray blank lines
     for (const r of data) while (r.length < names.length) r.push('');
     return { header: names, rows: data, original: data.map(r => [...r]), col: colsOf(names) };
@@ -442,7 +444,7 @@ function wireDropzone(zoneId, inputId, onFile) {
   }
 
   function hoursText(seconds) {
-    const hours = seconds / 3600; // Time Played is in seconds; NaN when the column is missing
+    const hours = seconds / 3600; // Time Played is in seconds
     return hours ? hours.toFixed(1) + ' h' : '';
   }
 
@@ -511,17 +513,18 @@ function wireDropzone(zoneId, inputId, onFile) {
   }
 
   // ---------- Diff tab ----------
-  // Side a (left) is the diff against list, side b (right) the working list. DIFF_KEYS are the
-  // columns compared and copied; DIFF_SHOW the columns shown on each side, with their labels.
+  // Side a (left) is the diff against list, side b (right) the working list. diffKeys: the
+  // columns compared and copied; DIFF_SHOW: the columns shown on each side, with their labels.
   const DIFF_KEYS = ['status', 'tags', 'hidden'];
+  const diffKeys = () => ($('compare-time').checked ? [...DIFF_KEYS, 'time'] : DIFF_KEYS);
   const DIFF_SHOW = [['name', 'Name'], ['hidden', 'Hidden'], ['status', 'Completion Status'],
                      ['time', 'Time Played'], ['source', 'Sources'], ['tags', 'Tags']];
   $('diff-labels').append(...[...DIFF_SHOW, ...DIFF_SHOW].map(([, label]) =>
     Object.assign(document.createElement('th'), { textContent: label })));
 
-  // Tags in another order are the same tags.
+  // Tags in another order are the same tags, and times that show the same hours are the same.
   function same(k, x, y) {
-    const norm = v => (k === 'tags' ? tagList(v).sort().join(TAG_SEP) : v);
+    const norm = v => (k === 'tags' ? tagList(v).sort().join(TAG_SEP) : k === 'time' ? hoursText(v) : v);
     return norm(x) === norm(y);
   }
 
@@ -560,6 +563,7 @@ function wireDropzone(zoneId, inputId, onFile) {
     pairs ??= pairUp();
     const lists = [other, work()];
     const fs = lists.map(l => filters(l.col));
+    const keys = diffKeys();
     const body = document.createDocumentFragment();
     pairs.forEach((pair, p) => {
       // Each side's column map, row, and row as read from its file; null when missing there.
@@ -569,7 +573,7 @@ function wireDropzone(zoneId, inputId, onFile) {
       const differs = k => a !== null && b !== null && !same(k, a.r[a.c[k]], b.r[b.c[k]]);
       const edited = x => x !== null && DIFF_SHOW.some(([k]) => x.r[x.c[k]] !== x.o[x.c[k]]);
       if (!sides.some((x, s) => x && shown(x.r, x.c) && fs[s].matches(x.r))) return;
-      if ($('only-diff').checked && a && b && !DIFF_KEYS.some(differs) && !sides.some(edited)) return;
+      if ($('only-diff').checked && a && b && !keys.some(differs) && !sides.some(edited)) return;
 
       const tr = body.appendChild(document.createElement('tr'));
       tr.dataset.p = p;
@@ -586,7 +590,7 @@ function wireDropzone(zoneId, inputId, onFile) {
           const v = x.r[x.c[k]];
           td.textContent = k === 'time' ? hoursText(v) : v ?? '';
           td.dataset.side = s;
-          td.classList.toggle('differs', DIFF_KEYS.includes(k) && differs(k));
+          td.classList.toggle('differs', keys.includes(k) && differs(k));
           td.classList.toggle('changed', v !== x.o[x.c[k]]);
         }
       });
@@ -609,7 +613,7 @@ function wireDropzone(zoneId, inputId, onFile) {
       pair[1 - s] = to.rows.length - 1;
     } else {
       const t = to.rows[pair[1 - s]];
-      const keys = DIFF_KEYS.filter(k => !same(k, t[to.col[k]], r[from.col[k]]));
+      const keys = diffKeys().filter(k => !same(k, t[to.col[k]], r[from.col[k]]));
       if (!keys.length) return;
       for (const k of keys) t[to.col[k]] = r[from.col[k]];
     }
@@ -628,8 +632,9 @@ function wireDropzone(zoneId, inputId, onFile) {
   $('tag-filter').addEventListener('input', render);
   $('include-hidden').addEventListener('change', render);
   $('only-diff').addEventListener('change', render);
+  $('compare-time').addEventListener('change', render);
 
-  // The working list: Export .csv on the Set tabs, Export right on Diff.
+  // The working list: Export .csv on the Set tabs, Export working list on Diff.
   function exportWorking() {
     const name = 'games-' + mode + '_' + timestamp() + '.csv';
     download(name, toCSV([header, ...rows]), 'text/csv;charset=utf-8');
