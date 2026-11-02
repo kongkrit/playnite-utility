@@ -1,5 +1,5 @@
 /* Each color is light-dark(light theme, dark theme). color-scheme picks the side: the system
-   setting until the script runs, then the theme button's choice through data-theme. It also themes native
+   setting, unless Settings' Dark or Light sets data-theme. It also themes native
    parts such as checkboxes, dropdown lists and scrollbars. */
 :root {
   color-scheme: light dark;
@@ -24,7 +24,8 @@
 
 html, body { margin: 0; }
 
-/* rem = the browser's default font size, 16px unless the user changed it: 0.9375rem = 15px.
+/* rem = <html>'s font size: the browser's default, 16px unless the user changed it, times
+   Settings' Text size, 100% at the start. At 16px and 100%, 0.9375rem = 15px.
    Narrower text with the same fonts: Segoe UI (Windows) has no narrow face, so the
    tighter letter-spacing does the work there; font-stretch applies only where the
    system font has a narrow width, as on recent macOS. */
@@ -86,7 +87,7 @@ button, input, select {
   border-color: var(--accent-soft);
 }
 
-.theme-toggle {
+.gear {
   margin-left: auto;
 }
 
@@ -215,8 +216,8 @@ main {
 .differs { font-weight: 600; color: var(--accent); }
 .missing { color: var(--muted); }
 
-.help {
-  width: min(47.5rem, 100% - 2rem);
+/* Both pop-ups: What? (.help) and Settings. */
+dialog {
   padding: 20px 24px;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -226,7 +227,9 @@ main {
 }
 
 /* A literal color: ::backdrop does not inherit the theme's custom properties in older browsers. */
-.help::backdrop { background: rgb(0 0 0 / 0.5); }
+dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+
+.help { width: min(47.5rem, 100% - 2rem); }
 
 .help h2 { font-size: 1.0625rem; margin: 20px 0 8px; }
 
@@ -269,6 +272,12 @@ main {
 }
 
 .help form { text-align: right; }
+
+/* Settings pop-up: per setting, a label, then its row of buttons. */
+.settings p { margin: 0 0 0.5rem; }
+.settings div { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+.settings hr { margin: 0 0 1rem; border: 0; border-top: 1px solid var(--border); }
+.settings form { text-align: center; }
 
 /* A step that is easy to miss and makes the script silently do nothing. */
 .warn {

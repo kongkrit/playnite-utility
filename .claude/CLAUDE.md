@@ -70,7 +70,7 @@ Goal: as simple as possible, without saying anything false.
 - `.gitignore`, `.gitattributes` — ignore rules; LF line endings (CRLF kept for `*.csv`) and binary file types.
 - `README.md`, `LICENSE` — human-facing overview and license.
 - `index.html` — the Playnite Utility page. Users open it by double-clicking, so it runs from `file://` with no server.
-- `assets/` — files the page loads: `index.js`, `styles.css`, `icon.svg` (tab icon), `export.svg` (What? button icon), `sun.svg`, `moon.svg` (theme button icons).
+- `assets/` — files the page loads: `index.js`, `styles.css`, `icon.svg` (tab icon), `export.svg` (What? button icon), `gear.svg` (Settings button icon).
 - `playnite-utility.ico` — `assets/icon.svg` as a Windows icon; stays at the root.
 
 ## Conventions

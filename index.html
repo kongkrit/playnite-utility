@@ -10,7 +10,7 @@
 <body>
   <header class="topbar">
     <h1 title="v1.0.4">Playnite Utility</h1>
-    <nav class="tabs" role="tablist">
+    <nav id="tabs" class="tabs" role="tablist">
       <button class="tab active" data-tab="status" role="tab" aria-selected="true">Set Completion Status</button>
       <button class="tab" data-tab="tag" role="tab" aria-selected="false">Set Tag</button>
       <button class="tab" data-tab="hide" role="tab" aria-selected="false">Set Hidden</button>
@@ -20,8 +20,8 @@
     <button id="what" class="btn" title="What is this page?">
       <img src="assets/export.svg" alt="What?">
     </button>
-    <button id="theme-toggle" class="btn theme-toggle">
-      <img id="theme-icon" src="assets/sun.svg" alt="Light">
+    <button id="gear" class="btn gear" title="Settings">
+      <img src="assets/gear.svg" alt="Settings">
     </button>
   </header>
 
@@ -236,6 +236,24 @@
     </div>
 
     <form method="dialog"><button class="btn">Dismiss</button></form>
+  </dialog>
+
+  <dialog id="settings" class="settings">
+    <p>Theme:</p>
+    <div id="theme" role="tablist" aria-label="Theme">
+      <button class="tab active" data-tab="system" role="tab" aria-selected="true">System</button>
+      <button class="tab" data-tab="dark" role="tab" aria-selected="false">Dark</button>
+      <button class="tab" data-tab="light" role="tab" aria-selected="false">Light</button>
+    </div>
+    <hr>
+    <p>Text size:</p>
+    <div>
+      <button id="text-smaller" class="btn">Smaller</button>
+      <button id="text-default" class="btn">Default</button>
+      <button id="text-larger" class="btn">Larger</button>
+    </div>
+    <hr>
+    <form method="dialog"><button class="btn">Okay</button></form>
   </dialog>
 
   <script src="assets/index.js"></script>

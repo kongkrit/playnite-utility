@@ -10,7 +10,7 @@ This README also shows how to set up Playnite with Steam, Epic, GOG, Ubisoft Con
 | `assets/styles.css` | Styling for `index.html`. |
 | `assets/icon.svg` | Browser tab icon for `index.html`. |
 | `assets/export.svg` | Icon on the **What?** button. |
-| `assets/sun.svg`, `moon.svg` | Theme button icons for Light and Dark. The page starts in the system's setting. |
+| `assets/gear.svg` | Icon on the **Settings** button. |
 | `playnite-utility.ico` | `assets/icon.svg` as a 256×256 Windows icon. |
 
 ## 1. Set up Playnite portable
@@ -245,6 +245,15 @@ Playnite cannot import a CSV. To apply your changes in Playnite, click **What?**
 Each time What? opens, the three boxes are ticked for the columns you changed on this page, or only the current tab's box if you changed nothing. **Add tags** is filled with the tags you added on this page, or else with **Apply Tag**. The script changes as you type or tick. Until a box is ticked, with at least one tag if **Add tags** is ticked, a hint shows instead of the script and **Copy** is disabled. The same happens until a file is dropped on the page (**current content**) or the path is filled in (**a .csv**).
 
 The last line reports `rows` (the games listed in the script, or in the file), `matched` (Playnite games found in the file), and one count per ticked box: `status`, `tagged` and `hidden`, each the number of games changed.
+
+### Settings
+
+The gear button at the right of the top bar opens **Settings**:
+
+- **Theme:** **System**, the default, follows the light or dark setting of Windows, even if it changes while the page is open. **Dark** and **Light** override it.
+- **Text size:** **Smaller** and **Larger** shrink or grow the page's text by 10% of the browser's font size per click, between 50% and 200%. **Default** goes back to 100%.
+
+The page saves neither, so each time it opens it starts at **System** and **Default**.
 
 ### Columns it needs
 

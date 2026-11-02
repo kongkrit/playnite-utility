@@ -86,19 +86,24 @@ function readFileText(file) {
 
 function isCsvName(name) { return /\.csv$/i.test(name); }
 
-// --- theme: starts from the system's light or dark setting; the button flips it ---
-function initTheme() {
-  const ICONS = { light: 'sun.svg', dark: 'moon.svg' };
-  function applyTheme(t) {
-    document.documentElement.dataset.theme = t;
-    $('theme-icon').src = 'assets/' + ICONS[t];
-    $('theme-icon').alt = t.charAt(0).toUpperCase() + t.slice(1);
-    $('theme-toggle').title = 'Theme: ' + t + ' (click to change)';
-  }
-  applyTheme(matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-  $('theme-toggle').addEventListener('click', () => {
-    applyTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+// --- settings pop-up: theme and text size. Nothing is saved, so each visit starts at System, Default ---
+function initSettings() {
+  $('gear').addEventListener('click', () => $('settings').showModal());
+  // System removes data-theme, so the colors follow the OS setting, even when it changes.
+  initTabs($('theme'), t => {
+    if (t === 'system') delete document.documentElement.dataset.theme;
+    else document.documentElement.dataset.theme = t;
   });
+  // Every font size is in rem, which is <html>'s font size. A percent of the browser's default
+  // keeps the user's browser setting as the base; px would override it.
+  let size = 100;
+  const setSize = pct => {
+    size = Math.min(200, Math.max(50, pct));
+    document.documentElement.style.fontSize = size + '%';
+  };
+  $('text-smaller').addEventListener('click', () => setSize(size - 10));
+  $('text-default').addEventListener('click', () => setSize(100));
+  $('text-larger').addEventListener('click', () => setSize(size + 10));
 }
 
 // --- help pop-up ---
@@ -106,11 +111,12 @@ function initHelp() {
   $('what').addEventListener('click', () => $('help').showModal());
 }
 
-// --- tabs: one is active at a time, like radio buttons; onSelect gets its data-tab ---
-function initTabs(onSelect) {
-  document.querySelectorAll('.tab').forEach(btn => {
+// --- the tabs in group: one is active at a time, like radio buttons; onSelect gets its data-tab ---
+function initTabs(group, onSelect) {
+  const tabs = group.querySelectorAll('.tab');
+  tabs.forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(b => {
+      tabs.forEach(b => {
         const on = b === btn;
         b.classList.toggle('active', on);
         b.setAttribute('aria-selected', on ? 'true' : 'false');
@@ -253,9 +259,9 @@ function wireDropzone(zoneId, inputId, onFile) {
   // The working list in the same shape as other, for code that handles either list.
   const work = () => ({ header, rows, original, col });
 
-  initTheme();
+  initSettings();
   initHelp();
-  initTabs(setMode);
+  initTabs($('tabs'), setMode);
   setMode(mode);
 
   // The What? script: one CSV lookup and game loop, plus a block per ticked box from MODES.
