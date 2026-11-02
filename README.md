@@ -236,6 +236,7 @@ The **Diff** tab compares the working list, the export the other tabs edit, with
 Playnite cannot import a CSV. To apply your changes in Playnite, click **What?**, the arrow-into-a-box button next to the tabs, on any Set tab or **Diff**. It builds a script for Playnite's PowerShell console that works like the one in [4. Restore hidden games](#4-restore-hidden-games), from these boxes:
 
 - **Import from:** **current content**, the default, puts the games as the page shows them into the script itself, so you don't need to export first. It includes only the `Name`, `Sources` and ticked columns. **a .csv** reads a file you exported instead.
+- **List only modified entries:** shown only with **current content**, and ticked at the start. The script then lists only the games whose ticked columns differ from the dropped file, including games **Diff** added, instead of every game. That keeps a large library from pasting thousands of lines into the console. If no game changed, a hint shows instead of the script.
 - **Exported CSV file:** shown only with **a .csv**. The full path of the file you exported. In File Explorer, right-click the file and choose **Copy as path** (Windows 10: Shift+right-click), then paste it here. The quotes that Copy as path adds are removed.
 - **Set Completion Status:** sets each game's status to the one in the file, only where it differs.
 - **Add tags:** adds each listed tag to the games whose `Tags` contain it, creating the tag in Playnite if it's new. Separate several tags with commas, such as `RPG, Co-op`. It removes nothing and leaves other tags alone.
@@ -243,7 +244,7 @@ Playnite cannot import a CSV. To apply your changes in Playnite, click **What?**
 
 Each time What? opens, the three boxes are ticked for the columns you changed on this page, or only the current tab's box if you changed nothing. **Add tags** is filled with the tags you added on this page, or else with **Apply Tag**. The script changes as you type or tick. Until a box is ticked, with at least one tag if **Add tags** is ticked, a hint shows instead of the script and **Copy** is disabled. The same happens until a file is dropped on the page (**current content**) or the path is filled in (**a .csv**).
 
-The last line reports `rows` (the games in the script or the file), `matched` (Playnite games found in the file), and one count per ticked box: `status`, `tagged` and `hidden`, each the number of games changed.
+The last line reports `rows` (the games listed in the script, or in the file), `matched` (Playnite games found in the file), and one count per ticked box: `status`, `tagged` and `hidden`, each the number of games changed.
 
 ### Columns it needs
 

@@ -194,7 +194,9 @@
         the script's link to your library. Do this before you copy the script, because copying replaces
         those commands. If they're gone, close the console and open it again.</li>
       <li>Under <strong>Import from</strong>, pick <strong>current content</strong> to apply the games as this page
-        shows them, with no export, or <strong>a .csv</strong> to apply a file you exported. Fill in the boxes
+        shows them, with no export, or <strong>a .csv</strong> to apply a file you exported. With
+        <strong>current content</strong>, <strong>List only modified entries</strong>, ticked at the start, lists
+        only the games whose ticked columns you changed, so the script stays short. Fill in the boxes
         below, then click <strong>Copy</strong>, paste the script into the console, and press Enter. For
         <strong>a .csv</strong>, get the path by right-clicking the file in File Explorer and choosing
         <strong>Copy as path</strong> (Windows 10: Shift+right-click).</li>
@@ -204,6 +206,7 @@
         <label><input type="radio" name="ps-from" id="ps-from-csv"> a .csv</label>
         <label><input type="radio" name="ps-from" id="ps-from-page" checked> current content</label>
       </span>
+      <label><input type="checkbox" id="ps-modified" checked> List only modified entries</label>
       <label class="ps-path">Exported CSV file <input id="ps-path" placeholder="Full path of the exported .csv"></label>
       <label><input type="checkbox" id="ps-status"> Set Completion Status</label>
       <label><input type="checkbox" id="ps-tag"> Add tags <input id="ps-tags" placeholder="RPG, Co-op"></label>
@@ -226,7 +229,7 @@
         ticked fields, and only where they differ, so running it twice is safe.</li>
       <li>The last line reports counts. <strong>matched 0</strong> means
         <span class="mono">$PlayniteApi</span> wasn't loaded: redo step 3. <strong>matched</strong> should be
-        close to <strong>rows</strong> (the games in the CSV, or on this page); much lower means names or stores don't match. If Playnite hasn't
+        close to <strong>rows</strong> (the games in the CSV, or listed in the script); much lower means names or stores don't match. If Playnite hasn't
         changed since the export you dropped here, <strong>status</strong>, <strong>tagged</strong> and
         <strong>hidden</strong> should equal the "changed" count each tab showed.</li>
     </ul>

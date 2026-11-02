@@ -289,10 +289,17 @@ function wireDropzone(zoneId, inputId, onFile) {
   // Name and Sources, which find each game, and the ticked columns, so the paste stays small.
   // A single-quoted here-string (@'...'@, a multi-line literal) ends only at a line starting
   // with '@, and csvField quotes any field holding a ', so no row can end it early.
-  function psPageRows(keys) {
+  function psPageRows(keys, picked) {
     const cs = ['Name', 'Sources', ...keys.map(k => MODES[k].column)].map(c => header.indexOf(c));
-    const lines = [header, ...rows].map(r => csvRow(cs.map(c => r[c])));
+    const lines = [header, ...picked].map(r => csvRow(cs.map(c => r[c])));
     return [`@'`, ...lines, `'@ | ConvertFrom-Csv`].join('\n');
+  }
+
+  // The rows psPageRows lists: all, or while List only modified entries is ticked, those whose
+  // ticked columns differ from the file. A row Diff added has an empty file row, so it counts.
+  function psPicked(keys) {
+    const cs = keys.map(k => header.indexOf(MODES[k].column));
+    return $('ps-modified').checked ? rows.filter((r, i) => cs.some(c => r[c] !== original[i][c])) : rows;
   }
 
   const SET_KEYS = ['status', 'tag', 'hide'];
@@ -303,13 +310,16 @@ function wireDropzone(zoneId, inputId, onFile) {
     const path = $('ps-path').value.trim().replace(/^"(.*)"$/, '$1'); // Copy as path adds quotes
     const keys = SET_KEYS.filter(k => $('ps-' + k).checked);
     const tags = $('ps-tags').value.split(',').map(s => s.trim()).filter(Boolean);
+    const picked = psPicked(keys);
     const hint = fromCsv && !path ? 'Paste the path of the exported CSV above.'
       : !fromCsv && !rows.length ? 'Drop a Playnite export on the page first.'
       : !keys.length ? 'Tick at least one box above.'
       : keys.includes('tag') && !tags.length ? 'Type a tag next to Add tags.'
+      : !fromCsv && !picked.length ? 'No game changed in the ticked columns. Untick List only modified entries to list every game.'
       : '';
-    const load = fromCsv ? `Import-Csv -Encoding UTF8 ${psQuote(path)}` : psPageRows(keys);
+    const load = fromCsv ? `Import-Csv -Encoding UTF8 ${psQuote(path)}` : psPageRows(keys, picked);
     $('ps-path').closest('label').hidden = !fromCsv;
+    $('ps-modified').closest('label').hidden = fromCsv;
     $('script').textContent = hint || psScript(load, keys, tags);
     $('copy-script').disabled = !!hint;
   }
