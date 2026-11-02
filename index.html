@@ -9,7 +9,7 @@
 </head>
 <body>
   <header class="topbar">
-    <h1 title="v1.0.4">Playnite Utility</h1>
+    <h1 title="v1.0.5">Playnite Utility</h1>
     <nav id="tabs" class="tabs" role="tablist">
       <button class="tab active" data-tab="status" role="tab" aria-selected="true">Set Completion Status</button>
       <button class="tab" data-tab="tag" role="tab" aria-selected="false">Set Tag</button>
@@ -17,8 +17,8 @@
       <button class="tab" data-tab="filter" role="tab" aria-selected="false">Filter</button>
       <button class="tab" data-tab="diff" role="tab" aria-selected="false">Diff</button>
     </nav>
-    <button id="what" class="btn" title="What is this page?">
-      <img src="assets/export.svg" alt="What?">
+    <button id="export-open" class="btn" title="Export to Playnite">
+      <img src="assets/export.svg" alt="Export">
     </button>
     <button id="gear" class="btn gear" title="Settings">
       <img src="assets/gear.svg" alt="Settings">
@@ -123,9 +123,11 @@
 
   <dialog id="help" class="help">
     <div class="help-head">
-      <h2>What is this page?</h2>
+      <h2>Export</h2>
       <form method="dialog"><button class="btn">Dismiss</button></form>
     </div>
+    <details id="about">
+    <summary>What is this page?</summary>
     <p>
       It gives many games the same <strong>Completion Status</strong> or the same <strong>tag</strong>, or
       <strong>hides</strong> them, in a few clicks, then saves the result as a new CSV. The
@@ -178,6 +180,7 @@
       <li data-mode="status tag hide">Click <strong>Export .csv</strong> to download <span class="mono">games-<span data-mode="status">status</span><span
         data-mode="tag">tag</span><span data-mode="hide">hide</span>_YYYYMMDD_HHMM.csv</span>.</li>
     </ol>
+    </details>
 
     <div data-mode="status tag hide diff">
     <h2>Import it back into Playnite</h2>

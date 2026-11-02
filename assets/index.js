@@ -108,7 +108,7 @@ function initSettings() {
 
 // --- help pop-up ---
 function initHelp() {
-  $('what').addEventListener('click', () => $('help').showModal());
+  $('export-open').addEventListener('click', () => $('help').showModal());
 }
 
 // --- the tabs in group: one is active at a time, like radio buttons; onSelect gets its data-tab ---
@@ -162,7 +162,7 @@ function wireDropzone(zoneId, inputId, onFile) {
   // One entry per tab; each Set tab edits one column. has: does a cell value carry the target?
   // add: the value after a click in list A. undo: the value after a click in list B; the same
   // value means there is nothing to undo.
-  // psCount / psSetup / psApply: the What? script's counter for this tab's box, and its lines
+  // psCount / psSetup / psApply: the Export script's counter for this tab's box, and its lines
   // before and inside the game loop (see psScript).
   const MODES = {
     status: {
@@ -264,7 +264,7 @@ function wireDropzone(zoneId, inputId, onFile) {
   initTabs($('tabs'), setMode);
   setMode(mode);
 
-  // The What? script: one CSV lookup and game loop, plus a block per ticked box from MODES.
+  // The Export script: one CSV lookup and game loop, plus a block per ticked box from MODES.
   // load: the PowerShell that reads the rows, from a file or from psPageRows.
   // keys: the ticked tabs, e.g. ['status', 'tag']. A game is saved only if a block changed it.
   function psScript(load, keys, tags) {
@@ -310,7 +310,7 @@ function wireDropzone(zoneId, inputId, onFile) {
 
   const SET_KEYS = ['status', 'tag', 'hide'];
 
-  // Shows the script for the What? boxes, or a hint while they are not filled in enough.
+  // Shows the script for the Export boxes, or a hint while they are not filled in enough.
   function updateScript() {
     const fromCsv = $('ps-from-csv').checked;
     const path = $('ps-path').value.trim().replace(/^"(.*)"$/, '$1'); // Copy as path adds quotes
@@ -333,7 +333,9 @@ function wireDropzone(zoneId, inputId, onFile) {
 
   // Runs after initHelp's listener has opened the dialog. Ticks the box of each column changed
   // on this page, or the current tab's when none changed, and lists the tags added on this page.
-  $('what').addEventListener('click', () => {
+  // What is this page? starts collapsed, except on Filter, where it is all the dialog holds.
+  $('export-open').addEventListener('click', () => {
+    $('about').open = mode === 'filter';
     if (mode === 'filter') return; // Filter changes nothing in Playnite: its help has no script
     const changed = SET_KEYS.filter(k => {
       const c = header.indexOf(MODES[k].column);
@@ -557,7 +559,7 @@ function wireDropzone(zoneId, inputId, onFile) {
   }
 
   // Pairs each game in other with the same game in rows, sorted by name, then store. A game
-  // matches by name, ignoring case and outer spaces, plus store: the What? script's rule. The
+  // matches by name, ignoring case and outer spaces, plus store: the Export script's rule. The
   // n-th copy of a game in one list pairs with the n-th copy in the other.
   function pairUp() {
     function keys(l) {

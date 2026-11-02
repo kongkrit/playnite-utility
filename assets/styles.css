@@ -219,7 +219,7 @@ main {
 .differs { font-weight: 600; color: var(--accent); }
 .missing { color: var(--muted); }
 
-/* Both pop-ups: What? (.help) and Settings. */
+/* Both pop-ups: Export (.help) and Settings. */
 dialog {
   padding: 20px 24px;
   border: 1px solid var(--border);
@@ -236,6 +236,9 @@ dialog::backdrop { background: rgb(0 0 0 / 0.5); }
 
 .help h2 { font-size: 1.0625rem; margin: 20px 0 8px; }
 
+/* What is this page?, a collapsible section that reads like a heading. */
+.help summary { font-size: 1.0625rem; font-weight: 600; cursor: pointer; }
+
 /* First heading and a Dismiss button on one row. Showing the dialog focuses that button,
    which keeps a small screen scrolled to the top. */
 .help-head {
@@ -248,7 +251,7 @@ dialog::backdrop { background: rgb(0 0 0 / 0.5); }
 
 .help-head h2 { margin: 0; }
 
-/* What? script options, one per row; the path box takes the rest of its row. */
+/* Export script options, one per row; the path box takes the rest of its row. */
 .ps-options { display: grid; gap: 0.5rem; justify-items: start; margin: 1rem 0; }
 .ps-path { justify-self: stretch; display: flex; align-items: center; gap: 0.5rem; }
 .ps-path input { flex: 1; }

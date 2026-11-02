@@ -9,7 +9,7 @@ This README also shows how to set up Playnite with Steam, Epic, GOG, Ubisoft Con
 | `index.html`, `assets/index.js` | The web page titled **Playnite Utility**, for quickly setting **Completion Status**, adding a tag, or hiding many games, and for splitting them by filter. |
 | `assets/styles.css` | Styling for `index.html`. |
 | `assets/icon.svg` | Browser tab icon for `index.html`. |
-| `assets/export.svg` | Icon on the **What?** button. |
+| `assets/export.svg` | Icon on the **Export** button. |
 | `assets/gear.svg` | Icon on the **Settings** button. |
 | `playnite-utility.ico` | `assets/icon.svg` as a 256×256 Windows icon. |
 
@@ -173,7 +173,7 @@ How it works:
 
 - It builds a lookup of name plus store from the file, then walks every game in Playnite and hides the ones that match.
 - Matching uses name and store together. A game owned on two stores is only hidden on the store listed in the file.
-- Case and spaces at the start and end are ignored, the same rule the What? scripts in `index.html` use.
+- Case and spaces at the start and end are ignored, the same rule the Export scripts in `index.html` use.
 - Games that are already hidden are skipped, so running it twice is safe. The final count only includes games it changed.
 
 On a fresh setup nothing is hidden yet, so the count should equal the number of games in the file. If it is lower, some names did not match. That usually means the store renamed a game. Fix the name in the exported CSV to match the `Name` column of a fresh export.
@@ -218,22 +218,22 @@ The **Filter** tab changes nothing. It splits the games into two lists by the fi
 
 **Include hidden** is ticked by default, so games whose `Hidden` is `True` are in both lists and both exports like any other. Untick it to leave them out.
 
-**Export unmatched** and **Export matched** download `games-unmatched_YYYYMMDD_HHMM.csv` and `games-matched_YYYYMMDD_HHMM.csv`. Each holds exactly the games in its list, in file order, with every column of the dropped file and any edits made on the other tabs. Filter changes nothing in Playnite, so What? on this tab has no script.
+**Export unmatched** and **Export matched** download `games-unmatched_YYYYMMDD_HHMM.csv` and `games-matched_YYYYMMDD_HHMM.csv`. Each holds exactly the games in its list, in file order, with every column of the dropped file and any edits made on the other tabs. Filter changes nothing in Playnite, so Export on this tab has no script.
 
 ### Diff tab
 
-The **Diff** tab compares the working list, the export the other tabs edit, with a second export, the *diff against list*, such as an older one. Use it to bring back statuses, tags, or hidden flags from the older export, then apply them in Playnite with **What?**.
+The **Diff** tab compares the working list, the export the other tabs edit, with a second export, the *diff against list*, such as an older one. Use it to bring back statuses, tags, or hidden flags from the older export, then apply them in Playnite with **Export**.
 
 1. Drop the working list on the right box and the diff against list on the left box. Both boxes show until both lists are in, even if you already dropped the working list on another tab. A box with a list shows its counts, such as `1500 games, 20 hidden, 300 with tags`. Click it or drop another file on it to replace that list.
-2. Each row shows one game from both lists, the diff against list on the left and the working list on the right, so the two versions line up. Games match by name, ignoring case and spaces at the start and end, plus store: the same rule the What? scripts use. Rows are sorted by name, then store. Each side shows `Name`, `Hidden`, `Completion Status`, `Time Played` in hours, `Sources`, and `Tags`. A game in only one list reads *Not in this list* on the other side.
+2. Each row shows one game from both lists, the diff against list on the left and the working list on the right, so the two versions line up. Games match by name, ignoring case and spaces at the start and end, plus store: the same rule the Export scripts use. Rows are sorted by name, then store. Each side shows `Name`, `Hidden`, `Completion Status`, `Time Played` in hours, `Sources`, and `Tags`. A game in only one list reads *Not in this list* on the other side.
 3. `Completion Status`, `Tags`, and `Hidden` values that differ between the sides are bold blue. The same tags in another order count as the same. **Compare time played**, ticked at the start, compares `Time Played` too, in the hours shown, so times that show the same hours count as the same. Untick it to ignore play time.
-4. Click a game's left side to copy its `Completion Status`, `Tags`, and `Hidden` to the right, or its right side to copy them to the left. While **Compare time played** is ticked, `Time Played` is copied too. The What? script doesn't apply it, so it changes only the CSV. If the other list lacks the game, the whole game is added to the end of that list. Each of that list's columns is filled from the column with the same name, or left empty. Values that differ from their file are highlighted in amber.
+4. Click a game's left side to copy its `Completion Status`, `Tags`, and `Hidden` to the right, or its right side to copy them to the left. While **Compare time played** is ticked, `Time Played` is copied too. The Export script doesn't apply it, so it changes only the CSV. If the other list lacks the game, the whole game is added to the end of that list. Each of that list's columns is filled from the column with the same name, or left empty. Values that differ from their file are highlighted in amber.
 
 **Filter by status**, **Source:**, **Filter by name**, and **Show all** keep a row when either side passes. **Show only diff** keeps games that differ, are in only one list, or that you changed. **Export diff against (original) list**, above the left side, downloads the diff against list as `games-diff-against_YYYYMMDD_HHMM.csv`, and **Export working (new) list**, above the right side, downloads the working list as `games-diff_YYYYMMDD_HHMM.csv`, each with all its columns. Changes to the working list also show on the other tabs. If you close the tab with changes to either list that you haven't exported, the browser asks before closing.
 
 ### Apply the changes in Playnite
 
-Playnite cannot import a CSV. To apply your changes in Playnite, click **What?**, the arrow-into-a-box button next to the tabs, on any Set tab or **Diff**. It builds a script for Playnite's PowerShell console that works like the one in [4. Restore hidden games](#4-restore-hidden-games), from these boxes:
+Playnite cannot import a CSV. To apply your changes in Playnite, click **Export**, the arrow-into-a-box button next to the tabs, on any Set tab or **Diff**. Its pop-up builds a script for Playnite's PowerShell console that works like the one in [4. Restore hidden games](#4-restore-hidden-games), from these boxes:
 
 - **Import from:** **current content**, the default, puts the games as the page shows them into the script itself, so you don't need to export first. It includes only the `Name`, `Sources` and ticked columns. **a .csv** reads a file you exported instead.
 - **List only modified entries:** shown only with **current content**, and ticked at the start. The script then lists only the games whose ticked columns differ from the dropped file, including games **Diff** added, instead of every game. That keeps a large library from pasting thousands of lines into the console. If no game changed, a hint shows instead of the script.
@@ -242,7 +242,7 @@ Playnite cannot import a CSV. To apply your changes in Playnite, click **What?**
 - **Add tags:** adds each listed tag to the games whose `Tags` contain it, creating the tag in Playnite if it's new. Separate several tags with commas, such as `RPG, Co-op`. It removes nothing and leaves other tags alone.
 - **Set Hidden:** hides games whose `Hidden` is `True` and un-hides games whose `Hidden` is `False`, only where that differs. Empty cells are skipped.
 
-Each time What? opens, the three boxes are ticked for the columns you changed on this page, or only the current tab's box if you changed nothing. **Add tags** is filled with the tags you added on this page, or else with **Apply Tag**. The script changes as you type or tick. Until a box is ticked, with at least one tag if **Add tags** is ticked, a hint shows instead of the script and **Copy** is disabled. The same happens until a file is dropped on the page (**current content**) or the path is filled in (**a .csv**).
+Above the boxes, **What is this page?** summarizes the current tab. It is collapsed until you click it, except on **Filter**, where the pop-up has nothing else. Each time Export opens, the three boxes are ticked for the columns you changed on this page, or only the current tab's box if you changed nothing. **Add tags** is filled with the tags you added on this page, or else with **Apply Tag**. The script changes as you type or tick. Until a box is ticked, with at least one tag if **Add tags** is ticked, a hint shows instead of the script and **Copy** is disabled. The same happens until a file is dropped on the page (**current content**) or the path is filled in (**a .csv**).
 
 The last line reports `rows` (the games listed in the script, or in the file), `matched` (Playnite games found in the file), and one count per ticked box: `status`, `tagged` and `hidden`, each the number of games changed.
 
@@ -262,7 +262,7 @@ The page finds columns by their exact header text, and case matters, so extra or
 | Column | Used for | If missing |
 |---|---|---|
 | `Name` | Every row. | The page rejects the file: *The file needs "Name" and "Sources" columns.* |
-| `Sources` | The store shown in each row, and the **Source:** filter. The What? scripts and **Diff** match games by name plus store. | The page rejects the file, as for `Name`. |
+| `Sources` | The store shown in each row, and the **Source:** filter. The Export scripts and **Diff** match games by name plus store. | The page rejects the file, as for `Name`. |
 | `Completion Status` | **Set Completion Status**, **Diff**, and **Filter by status** on every tab. | Added, empty. |
 | `Tags` | **Set Tag**, **Diff**, and the **Tag:** box and rows on **Set Hidden** and **Filter**. | Added, empty. |
 | `Hidden` | **Set Hidden**, **Diff**, **Include hidden** on **Filter**, and the **Show all** box on the other two Set tabs and **Diff**. | Added, empty. Empty counts as not hidden. |
