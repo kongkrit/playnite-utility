@@ -33,6 +33,7 @@
           <div class="dz-icon">&#8681;</div>
           <div class="dz-title">Diff against (left) list: Drop another Playnite export here</div>
           <div class="dz-sub">or click to choose a .csv file</div>
+          <div id="stats-other" class="dz-stats"></div>
         </div>
       </div>
       <div id="drop" class="dropzone" tabindex="0">
@@ -41,6 +42,7 @@
           <div class="dz-icon">&#8681;</div>
           <div class="dz-title"><span data-mode="diff">Working (right) list: </span>Drop your Playnite export here</div>
           <div class="dz-sub">or click to choose a .csv file</div>
+          <div id="stats" class="dz-stats"></div>
         </div>
       </div>
     </div>
@@ -135,7 +137,9 @@
     <ol>
       <li data-mode="status tag hide filter">Drop a Playnite export (from Library Exporter Advanced) on the box.</li>
       <li data-mode="diff">Drop two Playnite exports. The <strong>working list</strong>, the one the other tabs edit,
-        goes on the right box. The <strong>diff against list</strong>, such as an older export, goes on the left box.</li>
+        goes on the right box. The <strong>diff against list</strong>, such as an older export, goes on the left box.
+        Both boxes stay until both lists are in. A box with a list shows its counts; click it or drop again to
+        replace that list.</li>
       <li data-mode="diff">Each row shows one game from both lists side by side, matched by name and store, sorted
         by name. Values that differ are in bold blue. A game in only one list reads <strong>Not in this list</strong>
         on the other side.</li>

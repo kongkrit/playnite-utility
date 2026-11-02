@@ -129,6 +129,7 @@ main {
 .dz-icon { font-size: 2rem; line-height: 1; color: var(--accent); }
 .dz-title { font-weight: 600; margin-top: 8px; }
 .dz-sub { color: var(--muted); font-size: 0.875rem; }
+.dz-stats { font-weight: 600; color: var(--accent); }
 
 .error {
   margin: 16px 0 0;

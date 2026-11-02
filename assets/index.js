@@ -347,12 +347,22 @@ function wireDropzone(zoneId, inputId, onFile) {
     render();
   }
 
-  // A drop box for each list the tab still needs, and the tab's controls and lists once it has them.
+  // Diff shows both drop boxes until it has both lists, so either can still be replaced; the
+  // other tabs show one until the working list is in. Then the tab's controls and lists show.
   function showDrops() {
-    const needOther = mode === 'diff' && !other;
-    $('drop').hidden = header.length > 0;
-    $('drop-other').hidden = !needOther;
-    $('app').hidden = !header.length || needOther;
+    const ready = header.length > 0 && (mode !== 'diff' || other !== null);
+    $('drop').hidden = ready;
+    $('drop-other').hidden = ready || mode !== 'diff';
+    $('app').hidden = !ready;
+    $('stats').textContent = header.length ? listStats(work()) : '';
+    $('stats-other').textContent = other ? listStats(other) : '';
+  }
+
+  // A drop box's summary of the list loaded from it.
+  function listStats(l) {
+    const hidden = l.rows.filter(r => r[l.col.hidden] === 'True').length;
+    const tagged = l.rows.filter(r => r[l.col.tags]).length;
+    return `${l.rows.length} games, ${hidden} hidden, ${tagged} with tags`;
   }
 
   // Reads a dropped Playnite export into { header, rows, original, col }. On a problem it shows
@@ -416,8 +426,10 @@ function wireDropzone(zoneId, inputId, onFile) {
   });
 
   wireDropzone('drop-other', 'file-other', async file => {
-    other = await readList(file);
-    if (other) loaded();
+    const list = await readList(file);
+    if (!list) return;
+    other = list;
+    loaded();
   });
 
   // Set Hidden shows every game. Filter shows hidden ones only while Include hidden is ticked.
