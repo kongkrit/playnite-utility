@@ -81,7 +81,10 @@ button, input, select {
 
 .tab:hover { color: var(--text); }
 
-.tab.active {
+/* The selected tab, and buttons that should stand out the same way. font-weight: a button
+   inherits it, and Diff's export buttons sit in bold <th> cells. */
+.tab.active, .btn.accent {
+  font-weight: normal;
   background: var(--accent-soft);
   color: var(--accent);
   border-color: var(--accent-soft);

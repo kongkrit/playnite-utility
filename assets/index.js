@@ -662,7 +662,7 @@ function wireDropzone(zoneId, inputId, onFile) {
   $('only-diff').addEventListener('change', render);
   $('compare-time').addEventListener('change', render);
 
-  // The working list: Export .csv on the Set tabs, Export working (right) list on Diff.
+  // The working list: Export .csv on the Set tabs, Export working (new) list on Diff.
   function exportWorking() {
     const name = 'games-' + mode + '_' + timestamp() + '.csv';
     download(name, toCSV([header, ...rows]), 'text/csv;charset=utf-8');

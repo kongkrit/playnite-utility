@@ -31,7 +31,7 @@
         <input type="file" id="file-other" accept=".csv,text/csv" hidden>
         <div class="dz-inner">
           <div class="dz-icon">&#8681;</div>
-          <div class="dz-title">Diff against (left) list: Drop another Playnite export here</div>
+          <div class="dz-title">Diff against (original - left) list: Drop another Playnite export here</div>
           <div class="dz-sub">or click to choose a .csv file</div>
           <div id="stats-other" class="dz-stats"></div>
         </div>
@@ -40,7 +40,7 @@
         <input type="file" id="file" accept=".csv,text/csv" hidden>
         <div class="dz-inner">
           <div class="dz-icon">&#8681;</div>
-          <div class="dz-title"><span data-mode="diff">Working (right) list: </span>Drop your Playnite export here</div>
+          <div class="dz-title"><span data-mode="diff">Working (new - right) list: </span>Drop your Playnite export here</div>
           <div class="dz-sub">or click to choose a .csv file</div>
           <div id="stats" class="dz-stats"></div>
         </div>
@@ -109,8 +109,8 @@
             <colgroup span="6" class="split"></colgroup>
             <thead>
               <tr>
-                <th colspan="6"><button id="export-left" class="btn">Export diff against (left) list</button></th>
-                <th colspan="6"><button id="export-right" class="btn">Export working (right) list</button></th>
+                <th colspan="6"><button id="export-left" class="btn accent">Export diff against (original) list</button></th>
+                <th colspan="6"><button id="export-right" class="btn accent">Export working (new) list</button></th>
               </tr>
               <tr id="diff-labels"></tr>
             </thead>
@@ -152,7 +152,7 @@
       <li data-mode="diff"><strong>Filter by status</strong>, <strong>Source:</strong>, <strong>Filter by name</strong>
         and <strong>Show all</strong> keep a row when either side passes. <strong>Show only diff</strong> keeps games
         that differ, are in one list only, or that you changed.</li>
-      <li data-mode="diff">Click <strong>Export diff against (left) list</strong> or <strong>Export working (right) list</strong>,
+      <li data-mode="diff">Click <strong>Export diff against (original) list</strong> or <strong>Export working (new) list</strong>,
         above each side, to download
         <span class="mono">games-diff-against_YYYYMMDD_HHMM.csv</span> or
         <span class="mono">games-diff_YYYYMMDD_HHMM.csv</span>, with every column of that list.</li>
