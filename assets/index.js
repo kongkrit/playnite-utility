@@ -1,6 +1,7 @@
 /* Playnite Utility (index.html) — vanilla JS, no dependencies. Helpers first, then the page.
- * On the three Set tabs, clicking a game moves it between list A (without the target) and
- * list B (with the target); the tab picks the target: a Completion Status, a tag, or hidden.
+ * On the three Set tabs (Set Completion Status, Tag, Set Hidden), clicking a game moves it
+ * between list A (without the target) and list B (with the target); the tab picks the target:
+ * a Completion Status, a tag, or hidden.
  * The Filter tab edits nothing: it splits games into unmatched (A) and matched (B).
  * The Diff tab lines the working list up against a second export and copies values between them.
  */
@@ -155,6 +156,12 @@ function wireDropzone(zoneId, inputId, onFile) {
 (function () {
   const TAG_SEP = ', '; // Library Exporter Advanced's default "Lists separator"
   const tagList = v => (v ? v.split(TAG_SEP) : []);
+  // tags as a cell value, or the file's value orig when it holds the same tags in another order,
+  // so a removed tag added back leaves the row unchanged rather than reordered.
+  const tagCell = (tags, orig) => {
+    const v = tags.join(TAG_SEP);
+    return same('tags', v, orig) ? orig : v;
+  };
   // A PowerShell '...' string; single quotes inside are doubled to escape them.
   const psQuote = s => `'${s.replace(/'/g, "''")}'`;
   const SET_VALUE = { has: (v, t) => v === t, add: (v, t) => t }; // for one-value columns
@@ -190,32 +197,50 @@ function wireDropzone(zoneId, inputId, onFile) {
       column: 'Tags',
       target: () => $('tag').value.trim(),
       has: (v, t) => tagList(v).includes(t),
-      add: (v, t) => [...tagList(v), t].join(TAG_SEP),
-      undo: (v, t, orig) => (tagList(orig).includes(t) ? v : tagList(v).filter(x => x !== t).join(TAG_SEP)),
+      add: (v, t, orig) => tagCell([...tagList(v), t], orig),
+      // Un-tags any game, even one the file had the tag on.
+      undo: (v, t, orig) => tagCell(tagList(v).filter(x => x !== t), orig),
       heads: (t, sf, a, b) => [(sf || 'Other tags') + ' (' + a + ') · click to mark',
-                               'Tagged "' + t + '" (' + b + ') · click to undo'],
+                               'Tagged "' + t + '" (' + b + ') · click to un-tag'],
       summary: (t, n) => (t ? 'Tag "' + t + '" applied · ' : '') + n + ' changed',
-      cell: v => v,
+      // The row's tags, then each tag the file had but the row lost, struck through.
+      cell: (v, orig) => {
+        const now = tagList(v);
+        const lost = tagList(orig).filter(x => !now.includes(x));
+        const f = document.createDocumentFragment();
+        [...now, ...lost.map(x => Object.assign(document.createElement('s'), { textContent: x }))]
+          .forEach((x, k) => f.append(k ? TAG_SEP : '', x));
+        return f;
+      },
       psCount: 'tagged',
       // $tagIds maps tag name to Id; PowerShell hashtables ignore case, as -eq does.
       psSetup: tags => [
-        `$tags = @(${tags.map(psQuote).join(', ')})`,
+        `$addTags = @(${tags.add.map(psQuote).join(', ')})`,
+        `$removeTags = @(${tags.remove.map(psQuote).join(', ')})`,
         `$tagIds = @{}`,
         `foreach ($t in $PlayniteApi.Database.Tags) { $tagIds[$t.Name] = $t.Id }`,
       ],
-      // A tag is created only once a game needs it. TagIds is null on a game with no tags.
-      // tagged counts games, not tags, like the page's "changed" count.
+      // A tag is created only once a game needs it. Remove skips a tag Playnite lacks (no Id)
+      // and a game without the tag; -notcontains is true also when TagIds is null, as it is on a
+      // game with no tags. [void] keeps Remove's True from printing. tagged counts games, not
+      // tags, like the page's "changed" count.
       psApply: [
-        `    $added = $false`,
-        `    foreach ($tag in $tags) {`,
-        `        if (($value -split '${TAG_SEP}') -notcontains $tag) { continue }`,
+        `    $now = $value -split '${TAG_SEP}'`,
+        `    $edited = $false`,
+        `    foreach ($tag in $addTags) {`,
+        `        if ($now -notcontains $tag) { continue }`,
         `        if (-not $tagIds[$tag]) { $tagIds[$tag] = $PlayniteApi.Database.Tags.Add($tag).Id }`,
         `        if ($g.TagIds -contains $tagIds[$tag]) { continue }`,
         `        if (-not $g.TagIds) { $g.TagIds = [System.Collections.Generic.List[Guid]]::new() }`,
         `        $g.TagIds.Add($tagIds[$tag])`,
-        `        $added = $true`,
+        `        $edited = $true`,
         `    }`,
-        `    if ($added) { $tagged++; $changed = $true }`,
+        `    foreach ($tag in $removeTags) {`,
+        `        if ($now -contains $tag -or -not $tagIds[$tag] -or $g.TagIds -notcontains $tagIds[$tag]) { continue }`,
+        `        [void]$g.TagIds.Remove($tagIds[$tag])`,
+        `        $edited = $true`,
+        `    }`,
+        `    if ($edited) { $tagged++; $changed = $true }`,
       ],
     },
     hide: {
@@ -315,12 +340,13 @@ function wireDropzone(zoneId, inputId, onFile) {
     const fromCsv = $('ps-from-csv').checked;
     const path = $('ps-path').value.trim().replace(/^"(.*)"$/, '$1'); // Copy as path adds quotes
     const keys = SET_KEYS.filter(k => $('ps-' + k).checked);
-    const tags = $('ps-tags').value.split(',').map(s => s.trim()).filter(Boolean);
+    const list = id => $(id).value.split(',').map(s => s.trim()).filter(Boolean);
+    const tags = { add: list('ps-tags'), remove: list('ps-untags') };
     const picked = psPicked(keys);
     const hint = fromCsv && !path ? 'Paste the path of the exported CSV above.'
       : !fromCsv && !rows.length ? 'Drop a Playnite export on the page first.'
       : !keys.length ? 'Tick at least one box above.'
-      : keys.includes('tag') && !tags.length ? 'Type a tag next to Add tags.'
+      : keys.includes('tag') && !tags.add.length && !tags.remove.length ? 'Type a tag next to add or remove.'
       : !fromCsv && !picked.length ? 'No game changed in the ticked columns. Untick List only modified entries to list every game.'
       : '';
     const load = fromCsv ? `Import-Csv -Encoding UTF8 ${psQuote(path)}` : psPageRows(keys, picked);
@@ -332,7 +358,8 @@ function wireDropzone(zoneId, inputId, onFile) {
   document.querySelectorAll('.ps-options input').forEach(el => el.addEventListener('input', updateScript));
 
   // Runs after initHelp's listener has opened the dialog. Ticks the box of each column changed
-  // on this page, or the current tab's when none changed, and lists the tags added on this page.
+  // on this page, or the current tab's when none changed, and lists the tags added and removed
+  // on this page, or Tag name as one to add when none were.
   // What is this page? starts collapsed, except on Filter, where it is all the dialog holds.
   $('export-open').addEventListener('click', () => {
     $('about').open = mode === 'filter';
@@ -342,9 +369,13 @@ function wireDropzone(zoneId, inputId, onFile) {
       return rows.some((r, i) => r[c] !== original[i][c]);
     });
     for (const k of SET_KEYS) $('ps-' + k).checked = changed.length ? changed.includes(k) : k === mode;
-    const added = new Set(rows.flatMap((r, i) =>
-      tagList(r[col.tags]).filter(t => !tagList(original[i][col.tags]).includes(t))));
-    $('ps-tags').value = added.size ? [...added].join(TAG_SEP) : $('tag').value.trim();
+    // The tags in each row of a that are not in the same row of b.
+    const missing = (a, b) => new Set(a.flatMap((r, i) =>
+      tagList(r[col.tags]).filter(t => !tagList(b[i][col.tags]).includes(t))));
+    const added = missing(rows, original);
+    const removed = missing(original, rows);
+    $('ps-tags').value = added.size || removed.size ? [...added].join(TAG_SEP) : $('tag').value.trim();
+    $('ps-untags').value = [...removed].join(TAG_SEP);
     updateScript();
   });
 
@@ -507,7 +538,7 @@ function wireDropzone(zoneId, inputId, onFile) {
       tr.dataset.i = i;
       tr.classList.toggle('changed', isChanged);
       const cells = [r[col.name], r[col.source], hoursText(r[col.time]), m.cell(v, orig, r)];
-      for (const text of cells) tr.insertCell().textContent = text ?? '';
+      for (const x of cells) tr.insertCell().append(x ?? ''); // a string goes in as text, like textContent
       (inB ? b : a).append(tr);
     });
 
@@ -528,7 +559,7 @@ function wireDropzone(zoneId, inputId, onFile) {
     const i = +tr.dataset.i;
     const c = header.indexOf(m.column);
     const v = rows[i][c];
-    const next = m.has(v, t) ? m.undo(v, t, original[i][c]) : m.add(v, t);
+    const next = m.has(v, t) ? m.undo(v, t, original[i][c]) : m.add(v, t, original[i][c]);
     if (next === v) return; // nothing to undo
     rows[i][c] = next;
     dirty = true;

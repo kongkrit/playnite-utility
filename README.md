@@ -6,7 +6,7 @@ This README also shows how to set up Playnite with Steam, Epic, GOG, Ubisoft Con
 
 | File | What it is |
 |---|---|
-| `index.html`, `assets/index.js` | The web page titled **Playnite Utility**, for quickly setting **Completion Status**, adding a tag, or hiding many games, and for splitting them by filter. |
+| `index.html`, `assets/index.js` | The web page titled **Playnite Utility**, for quickly setting **Completion Status**, adding or removing a tag, or hiding many games, and for splitting them by filter. |
 | `assets/styles.css` | Styling for `index.html`. |
 | `assets/icon.svg` | Browser tab icon for `index.html`. |
 | `assets/export.svg` | Icon on the **Export** button. |
@@ -180,14 +180,14 @@ On a fresh setup nothing is hidden yet, so the count should equal the number of 
 
 ## 5. index.html: Playnite Utility
 
-`index.html`, titled **Playnite Utility**, lets you mark many games with the same **Completion Status**, give them the same tag, or hide them, in a few clicks, then save the result as a new CSV. Its **Filter** tab instead splits the games into two CSVs, and its **Diff** tab compares them with a second export. It runs entirely in the browser with no server and no internet connection. Double-click it to open it.
+`index.html`, titled **Playnite Utility**, lets you mark many games with the same **Completion Status**, add or remove a tag, or hide them, in a few clicks, then save the result as a new CSV. Its **Filter** tab instead splits the games into two CSVs, and its **Diff** tab compares them with a second export. It runs entirely in the browser with no server and no internet connection. Double-click it to open it.
 
-It has five tabs: **Set Completion Status**, **Set Tag**, **Set Hidden**, **Filter**, and **Diff**. The steps below are for **Set Completion Status**.
+It has five tabs: **Set Completion Status**, **Tag**, **Set Hidden**, **Filter**, and **Diff**. The steps below are for **Set Completion Status**.
 
 1. Drop a Playnite export from section 3 onto the box.
 2. Pick the status you want to give games under **Target Completion Status**. The choices are Playnite's eight: `Abandoned`, `Beaten`, `Completed`, `Not Played`, `On Hold`, `Plan to Play`, `Played`, `Playing`.
 3. Type part of a name in the filter box to narrow both lists. Matching ignores case. **Source:** also narrows both lists, to one store; its choices are the stores in the dropped file. The box after the filter box, **Show all** by default, narrows both lists to **Show hidden** or **Show not hidden** games; an empty `Hidden` counts as not hidden. To narrow only the left list, pick a status under **Filter by status**. It matches the status each row currently shows, and `<NONE>` turns it off. For example, target `Beaten` with filter `Played` lists only the games you've played but not yet marked `Beaten`.
-4. Click games to mark them, then click **Export .csv**. It downloads `games-status_YYYYMMDD_HHMM.csv`. **Set Tag** and **Set Hidden** name theirs `games-tag_…` and `games-hide_…`.
+4. Click games to mark them, then click **Export .csv**. It downloads `games-status_YYYYMMDD_HHMM.csv`. **Tag** and **Set Hidden** name theirs `games-tag_…` and `games-hide_…`.
 
 The page shows two lists side by side:
 
@@ -200,9 +200,9 @@ After each click, the filter box gets focus with its text selected, so you can t
 
 The export has the same columns, row order, and format as the file you dropped, with only **Completion Status**, **Tags** and **Hidden** changed. Any of those three columns the file lacked is added, empty; see [Columns it needs](#columns-it-needs). You can drop it back onto the page to keep going. If you close the tab with marks you haven't exported, the browser asks before closing.
 
-### Set Tag tab
+### Tag tab
 
-The **Set Tag** tab works the same way, with a tag in place of a status. Type the tag under **Apply Tag**. The left list, **Other tags**, holds games without it. The right list, **Tagged "…"**, holds games with it. Clicking a game on the left adds the tag. Clicking one you tagged on the right removes it again. Each row shows the game's tags, and the text next to **Export .csv** reads like `Tag "RPG" applied · 3 changed`. The filters work as on **Set Completion Status**. The export keeps the edits from all tabs.
+The **Tag** tab works the same way, with a tag in place of a status. Type the tag in **Tag name**. The left list, **Other tags**, holds games without it. The right list, **Tagged "…"**, holds games with it. Clicking a game on the left adds the tag. Clicking one on the right removes the tag, even one the file had, and moves the game left with that tag struck through, like `Old, ~~RPG~~`. Clicking it again adds the tag back. Each row shows the game's tags, and the text next to **Export .csv** reads like `Tag "RPG" applied · 3 changed`. The filters work as on **Set Completion Status**. The export keeps the edits from all tabs.
 
 ### Set Hidden tab
 
@@ -233,16 +233,16 @@ The **Diff** tab compares the working list, the export the other tabs edit, with
 
 ### Apply the changes in Playnite
 
-Playnite cannot import a CSV. To apply your changes in Playnite, click **Export**, the arrow-into-a-box button next to the tabs, on any Set tab or **Diff**. Its pop-up builds a script for Playnite's PowerShell console that works like the one in [4. Restore hidden games](#4-restore-hidden-games), from these boxes:
+Playnite cannot import a CSV. To apply your changes in Playnite, click **Export**, the arrow-into-a-box button next to the tabs, on any tab but **Filter**. Its pop-up builds a script for Playnite's PowerShell console that works like the one in [4. Restore hidden games](#4-restore-hidden-games), from these boxes:
 
 - **Import from:** **current content**, the default, puts the games as the page shows them into the script itself, so you don't need to export first. It includes only the `Name`, `Sources` and ticked columns. **a .csv** reads a file you exported instead.
 - **List only modified entries:** shown only with **current content**, and ticked at the start. The script then lists only the games whose ticked columns differ from the dropped file, including games **Diff** added, instead of every game. That keeps a large library from pasting thousands of lines into the console. If no game changed, a hint shows instead of the script.
 - **Exported CSV file:** shown only with **a .csv**. The full path of the file you exported. In File Explorer, right-click the file and choose **Copy as path** (Windows 10: Shift+right-click), then paste it here. The quotes that Copy as path adds are removed.
 - **Set Completion Status:** sets each game's status to the one in the file, only where it differs.
-- **Add tags:** adds each listed tag to the games whose `Tags` contain it, creating the tag in Playnite if it's new. Separate several tags with commas, such as `RPG, Co-op`. It removes nothing and leaves other tags alone.
+- **Set tags:** **add** adds each listed tag to the games whose `Tags` contain it, creating the tag in Playnite if it's new. **remove** removes each listed tag from the games whose `Tags` lack it. Separate several tags with commas, such as `RPG, Co-op`. Tags in neither list are left alone.
 - **Set Hidden:** hides games whose `Hidden` is `True` and un-hides games whose `Hidden` is `False`, only where that differs. Empty cells are skipped.
 
-Above the boxes, **What is this page?** summarizes the current tab. It is collapsed until you click it, except on **Filter**, where the pop-up has nothing else. Each time Export opens, the three boxes are ticked for the columns you changed on this page, or only the current tab's box if you changed nothing. **Add tags** is filled with the tags you added on this page, or else with **Apply Tag**. The script changes as you type or tick. Until a box is ticked, with at least one tag if **Add tags** is ticked, a hint shows instead of the script and **Copy** is disabled. The same happens until a file is dropped on the page (**current content**) or the path is filled in (**a .csv**).
+Above the boxes, **What is this page?** summarizes the current tab. It is collapsed until you click it, except on **Filter**, where the pop-up has nothing else. Each time Export opens, the three boxes are ticked for the columns you changed on this page, or only the current tab's box if you changed nothing. **add** is filled with the tags you added on this page and **remove** with the tags you removed. If you changed no tags, **add** gets **Tag name** instead. The script changes as you type or tick. Until a box is ticked, with at least one tag if **Set tags** is ticked, a hint shows instead of the script and **Copy** is disabled. The same happens until a file is dropped on the page (**current content**) or the path is filled in (**a .csv**).
 
 The last line reports `rows` (the games listed in the script, or in the file), `matched` (Playnite games found in the file), and one count per ticked box: `status`, `tagged` and `hidden`, each the number of games changed.
 
@@ -264,8 +264,8 @@ The page finds columns by their exact header text, and case matters, so extra or
 | `Name` | Every row. | The page rejects the file: *The file needs "Name" and "Sources" columns.* |
 | `Sources` | The store shown in each row, and the **Source:** filter. The Export scripts and **Diff** match games by name plus store. | The page rejects the file, as for `Name`. |
 | `Completion Status` | **Set Completion Status**, **Diff**, and **Filter by status** on every tab. | Added, empty. |
-| `Tags` | **Set Tag**, **Diff**, and the **Tag:** box and rows on **Set Hidden** and **Filter**. | Added, empty. |
-| `Hidden` | **Set Hidden**, **Diff**, **Include hidden** on **Filter**, and the **Show all** box on the other two Set tabs and **Diff**. | Added, empty. Empty counts as not hidden. |
+| `Tags` | **Tag**, **Diff**, and the **Tag:** box and rows on **Set Hidden** and **Filter**. | Added, empty. |
+| `Hidden` | **Set Hidden**, **Diff**, **Include hidden** on **Filter**, and the **Show all** box on **Set Completion Status**, **Tag** and **Diff**. | Added, empty. Empty counts as not hidden. |
 | `Time Played` | The hours shown in each row, and **Compare time played** on **Diff**. | Added, empty. The page shows no hours. |
 
 An added column appears in the export, empty except for the games you clicked. The scripts skip empty cells, so games you didn't click keep their values in Playnite. Other columns, such as `Age Rating`, are not read. They are copied unchanged into the export.
