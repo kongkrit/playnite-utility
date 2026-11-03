@@ -165,11 +165,23 @@ function wireDropzone(zoneId, inputId, onFile) {
   };
   // A PowerShell '...' string; single quotes inside are doubled to escape them.
   const psQuote = s => `'${s.replace(/'/g, "''")}'`;
-  const SET_VALUE = { has: (v, t) => v === t, add: (v, t) => t }; // for one-value columns
+  // For one-value columns. Once changed, a cell reads like "Played → Beaten".
+  const SET_VALUE = {
+    has: (v, t) => v === t,
+    add: (v, t) => t,
+    cell: (v, orig) => (v === orig ? v : orig + ' → ' + v),
+  };
+
+  // The columns every table shows, in order, as [key in col, label].
+  const COLUMNS = [['name', 'Name'], ['hidden', 'Hidden'], ['status', 'Completion Status'],
+                   ['source', 'Sources'], ['time', 'Time Played'], ['tags', 'Tags']];
+  const labelCells = () => COLUMNS.map(([, label]) => Object.assign(document.createElement('th'), { textContent: label }));
+  document.querySelectorAll('.games thead tr').forEach(tr => tr.append(...labelCells()));
+  $('diff-labels').append(...labelCells(), ...labelCells()); // Diff's two lists side by side
 
   // One entry per tab; each Set tab edits one column. has: does a cell value carry the target?
   // add: the value after a click in list A. undo: the value after a click in list B; the same
-  // value means there is nothing to undo.
+  // value means there is nothing to undo. cell: the edited column's cell in the lists.
   // psCount / psSetup / psApply: the Export script's counter for this tab's box, and its lines
   // before and inside the game loop (see psScript).
   const MODES = {
@@ -181,7 +193,6 @@ function wireDropzone(zoneId, inputId, onFile) {
       heads: (t, sf, a, b) => [(sf || 'Other statuses') + ' (' + a + ') · click to mark ' + t,
                                t + ' (' + b + ') · click to undo'],
       summary: (t, n) => n + ' changed',
-      cell: (v, orig) => (v === orig ? v : orig + ' → ' + v),
       psCount: 'status',
       psSetup: () => [
         `$ids = @{}`,
@@ -252,7 +263,6 @@ function wireDropzone(zoneId, inputId, onFile) {
       undo: (v, t, orig) => (orig === t ? 'False' : orig),
       heads: (t, sf, a, b) => ['Not hidden (' + a + ') · click to hide', 'Hidden (' + b + ') · click to un-hide'],
       summary: (t, n) => n + ' changed',
-      cell: (v, orig, r) => r[col.tags],
       psCount: 'hidden',
       psSetup: () => [],
       // Skips empty cells, so a Hidden column this page added changes only the games you clicked.
@@ -268,7 +278,6 @@ function wireDropzone(zoneId, inputId, onFile) {
       target: () => '',
       heads: (t, sf, a, b) => ['(' + a + ')', '(' + b + ')'], // after each list's export button
       summary: () => '',
-      cell: (v, orig, r) => [r[col.status], r[col.tags]].filter(Boolean).join(' · '),
     },
   };
 
@@ -515,6 +524,9 @@ function wireDropzone(zoneId, inputId, onFile) {
     return hours ? hours.toFixed(1) + ' h' : '';
   }
 
+  // A plain cell's text: Time Played in hours, any other column as it is.
+  function cellText(k, v) { return k === 'time' ? hoursText(v) : v ?? ''; }
+
   function render() {
     if ($('app').hidden) return; // no file yet
     if (mode === 'diff') return renderDiff();
@@ -543,8 +555,8 @@ function wireDropzone(zoneId, inputId, onFile) {
       const tr = document.createElement('tr');
       tr.dataset.i = i;
       tr.classList.toggle('changed', isChanged);
-      const cells = [r[col.name], r[col.source], hoursText(r[col.time]), m.cell(v, orig, r)];
-      for (const x of cells) tr.insertCell().append(x ?? ''); // a string goes in as text, like textContent
+      // The tab's own column shows its edit. append puts a string in as text, like textContent.
+      for (const [k] of COLUMNS) tr.insertCell().append(col[k] === c ? m.cell(v, orig) : cellText(k, r[col[k]]));
       (inB ? b : a).append(tr);
     });
 
@@ -558,7 +570,7 @@ function wireDropzone(zoneId, inputId, onFile) {
 
   // A row without the target gets it. A row with the target loses it again, if its tab allows.
   $('lists').addEventListener('click', e => {
-    const tr = e.target.closest('tr');
+    const tr = e.target.closest('tr[data-i]'); // a game's row, not the column names
     const m = MODES[mode];
     const t = m.target();
     if (!tr || !t) return;
@@ -581,13 +593,9 @@ function wireDropzone(zoneId, inputId, onFile) {
 
   // ---------- Diff tab ----------
   // Side a (left) is the diff against list, side b (right) the working list. diffKeys: the
-  // columns compared and copied; DIFF_SHOW: the columns shown on each side, with their labels.
+  // columns compared and copied.
   const DIFF_KEYS = ['status', 'tags', 'hidden'];
   const diffKeys = () => ($('compare-time').checked ? [...DIFF_KEYS, 'time'] : DIFF_KEYS);
-  const DIFF_SHOW = [['name', 'Name'], ['hidden', 'Hidden'], ['status', 'Completion Status'],
-                     ['time', 'Time Played'], ['source', 'Sources'], ['tags', 'Tags']];
-  $('diff-labels').append(...[...DIFF_SHOW, ...DIFF_SHOW].map(([, label]) =>
-    Object.assign(document.createElement('th'), { textContent: label })));
 
   // Tags in another order are the same tags, and times that show the same hours are the same.
   function same(k, x, y) {
@@ -638,7 +646,7 @@ function wireDropzone(zoneId, inputId, onFile) {
         : { c: lists[s].col, r: lists[s].rows[i], o: lists[s].original[i] }));
       const [a, b] = sides;
       const differs = k => a !== null && b !== null && !same(k, a.r[a.c[k]], b.r[b.c[k]]);
-      const edited = x => x !== null && DIFF_SHOW.some(([k]) => x.r[x.c[k]] !== x.o[x.c[k]]);
+      const edited = x => x !== null && COLUMNS.some(([k]) => x.r[x.c[k]] !== x.o[x.c[k]]);
       if (!sides.some((x, s) => x && shown(x.r, x.c) && fs[s].matches(x.r))) return;
       if ($('only-diff').checked && a && b && !keys.some(differs) && !sides.some(edited)) return;
 
@@ -647,15 +655,15 @@ function wireDropzone(zoneId, inputId, onFile) {
       sides.forEach((x, s) => {
         if (!x) {
           const td = tr.insertCell();
-          td.colSpan = DIFF_SHOW.length;
+          td.colSpan = COLUMNS.length;
           td.className = 'missing';
           td.textContent = 'Not in this list';
           return;
         }
-        for (const [k] of DIFF_SHOW) {
+        for (const [k] of COLUMNS) {
           const td = tr.insertCell();
           const v = x.r[x.c[k]];
-          td.textContent = k === 'time' ? hoursText(v) : v ?? '';
+          td.textContent = cellText(k, v);
           td.dataset.side = s;
           td.classList.toggle('differs', keys.includes(k) && differs(k));
           td.classList.toggle('changed', v !== x.o[x.c[k]]);

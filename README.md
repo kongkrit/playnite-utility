@@ -194,7 +194,7 @@ The page shows two lists side by side:
 - **Other statuses**, on the left: games whose status is not the target. Clicking one sets it to the target and moves it right.
 - **The target status**, on the right. Clicking a game you marked puts it back to the status it had in the file and moves it left. Games that already had the target status in the file don't move, because there is nothing to undo. To change one of those, pick its new status as the target and click it on the left.
 
-Each row shows name, store, hours played, and status. Games whose status differs from the file are highlighted in amber, and their status reads like `Played → Beaten`. The count next to **Export .csv** says how many games changed.
+Each row shows the game's `Name`, `Hidden`, `Completion Status`, `Sources`, `Time Played` in hours, and `Tags`, under a row of column names, as on **Diff**. Games whose status differs from the file are highlighted in amber, and their status reads like `Played → Beaten`. The count next to **Export .csv** says how many games changed.
 
 After each click, the filter box gets focus with its text selected, so you can type the next name straight away.
 
@@ -202,11 +202,11 @@ The export has the same columns, row order, and format as the file you dropped, 
 
 ### Tag tab
 
-The **Tag** tab works the same way, with a tag in place of a status. Type the tag in **Tag name**. The left list, **Other tags**, holds games without it. The right list, **Tagged "…"**, holds games with it. Clicking a game on the left adds the tag. Clicking one on the right removes the tag, even one the file had, and moves the game left with that tag struck through, like `Old, ~~RPG~~`. Clicking it again adds the tag back. Each row shows the game's tags, and the text next to **Export .csv** reads like `Tag "RPG" applied · 3 changed`. The filters work as on **Set Completion Status**. The export keeps the edits from all tabs.
+The **Tag** tab works the same way, with a tag in place of a status. Type the tag in **Tag name**. The left list, **Other tags**, holds games without it. The right list, **Tagged "…"**, holds games with it. Clicking a game on the left adds the tag. Clicking one on the right removes the tag, even one the file had, and moves the game left with that tag struck through, like `Old, ~~RPG~~`. Clicking it again adds the tag back. The text next to **Export .csv** reads like `Tag "RPG" applied · 3 changed`. The filters work as on **Set Completion Status**. The export keeps the edits from all tabs.
 
 ### Hide/un-hide tab
 
-The **Hide/un-hide** tab hides and un-hides games. The left list, **Not hidden**, holds games whose `Hidden` isn't `True`. The right list, **Hidden**, holds the rest. Clicking a game on the left hides it. Clicking a game on the right un-hides it, even one that was hidden in the file. Each row shows the game's tags.
+The **Hide/un-hide** tab hides and un-hides games. The left list, **Not hidden**, holds games whose `Hidden` isn't `True`. The right list, **Hidden**, holds the rest. Clicking a game on the left hides it. Clicking a game on the right un-hides it, even one that was hidden in the file. A changed game is highlighted, and its `Hidden` reads like `False → True`.
 
 The filters work as on **Set Completion Status**, without the **Show all** box.
 
@@ -214,7 +214,7 @@ The filters work as on **Set Completion Status**, without the **Show all** box.
 
 ### Filter tab
 
-The **Filter** tab changes nothing. It splits the games into two lists by the filters on its line: **Filter by status**, **Source:**, **Filter by name**, and **Tag:**, which works as on **Set Completion Status**. A game that passes all four is matched, on the right. The rest are unmatched, on the left. Empty filters match everything, so with no filters set, the unmatched list is empty. Each row shows the game's status and tags. Clicking a game does nothing.
+The **Filter** tab changes nothing. It splits the games into two lists by the filters on its line: **Filter by status**, **Source:**, **Filter by name**, and **Tag:**, which works as on **Set Completion Status**. A game that passes all four is matched, on the right. The rest are unmatched, on the left. Empty filters match everything, so with no filters set, the unmatched list is empty. Clicking a game does nothing.
 
 **Include hidden** is ticked by default, so games whose `Hidden` is `True` are in both lists and both exports like any other. Untick it to leave them out.
 
@@ -225,7 +225,7 @@ The **Filter** tab changes nothing. It splits the games into two lists by the fi
 The **Diff** tab compares the working list, the export the other tabs edit, with a second export, the *diff against list*, such as an older one. Use it to bring back statuses, tags, or hidden flags from the older export, then apply them in Playnite with **Export**.
 
 1. Drop the working list on the right box and the diff against list on the left box. Both boxes show until both lists are in, even if you already dropped the working list on another tab. A box with a list shows its counts, such as `1500 games, 20 hidden, 300 with tags`. Click it or drop another file on it to replace that list.
-2. Each row shows one game from both lists, the diff against list on the left and the working list on the right, so the two versions line up. Games match by name, ignoring case and spaces at the start and end, plus store: the same rule the Export scripts use. Rows are sorted by name, then store. Each side shows `Name`, `Hidden`, `Completion Status`, `Time Played` in hours, `Sources`, and `Tags`. A game in only one list reads *Not in this list* on the other side.
+2. Each row shows one game from both lists, the diff against list on the left and the working list on the right, so the two versions line up. Games match by name, ignoring case and spaces at the start and end, plus store: the same rule the Export scripts use. Rows are sorted by name, then store. Each side shows `Name`, `Hidden`, `Completion Status`, `Sources`, `Time Played` in hours, and `Tags`. A game in only one list reads *Not in this list* on the other side.
 3. `Completion Status`, `Tags`, and `Hidden` values that differ between the sides are bold blue. The same tags in another order count as the same. **Compare time played**, ticked at the start, compares `Time Played` too, in the hours shown, so times that show the same hours count as the same. Untick it to ignore play time.
 4. Click a game's left side to copy its `Completion Status`, `Tags`, and `Hidden` to the right, or its right side to copy them to the left. While **Compare time played** is ticked, `Time Played` is copied too. The Export script doesn't apply it, so it changes only the CSV. If the other list lacks the game, the whole game is added to the end of that list. Each of that list's columns is filled from the column with the same name, or left empty. Values that differ from their file are highlighted in amber.
 

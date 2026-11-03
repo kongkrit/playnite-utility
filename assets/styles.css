@@ -184,8 +184,10 @@ main {
   border-bottom: 1px solid var(--border);
 }
 
+/* 284px: the height around a list on the edit tabs (top bar, two control lines, heading, page
+   padding), measured so the page itself doesn't scroll. */
 .scroll {
-  max-height: calc(100vh - 190px);
+  max-height: calc(100vh - 284px);
   overflow: auto;
 }
 
@@ -196,20 +198,23 @@ main {
   cursor: pointer;
 }
 
-.games td, .diff td, .diff th {
+.games td, .games th, .diff td, .diff th {
   padding: 4px 12px;
   border-bottom: 1px solid var(--border);
 }
 
+/* The column names stay in view while the rows scroll. */
+.games thead, .diff thead { position: sticky; top: 0; }
+.games th, .diff th { text-align: left; background: var(--surface); }
+
+/* Name and Tags wrap; a long tag list makes its row taller, not the table wider. */
 .games td + td { color: var(--muted); white-space: nowrap; }
+.games td:last-child { white-space: normal; }
 
 .changed { background: var(--warn-soft); }
 .games tr:hover, .diff tr:hover { background: var(--accent-soft); }
 
-/* Diff: one table, so each game's two sides line up. The header stays in view while the rows
-   scroll, and a line splits the two lists. */
-.diff thead { position: sticky; top: 0; }
-.diff th { text-align: left; background: var(--surface); }
+/* Diff: one table, so each game's two sides line up, and a line splits the two lists. */
 .split { border-left: 2px solid var(--border); }
 .differs { font-weight: 600; color: var(--accent); }
 .missing { color: var(--muted); }
