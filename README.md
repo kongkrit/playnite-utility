@@ -246,6 +246,10 @@ Above the boxes, **What is this page?** summarizes the current tab. It is collap
 
 The last line reports `rows` (the games listed in the script, or in the file), `matched` (Playnite games found in the file), and one count per ticked box: `status`, `tagged` and `hidden`, each the number of games changed.
 
+### Page width
+
+The two arrow buttons left of the gear make the page narrower or wider by 10rem per click, which is 160px at the default text size. The page is never narrower than 40rem or wider than the window. It starts at 100rem (1600px) each time it opens, because nothing is saved. **Text size** in Settings scales the width too. Narrower lists hide some columns, starting with `Time Played`; see [5. index.html: Playnite Utility](#5-indexhtml-playnite-utility).
+
 ### Settings
 
 The gear button at the right of the top bar opens **Settings**:

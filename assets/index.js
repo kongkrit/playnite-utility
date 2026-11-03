@@ -107,6 +107,22 @@ function initSettings() {
   $('text-larger').addEventListener('click', () => setSize(size + 10));
 }
 
+// --- page width: Narrow and Widen step main's max-width by 10rem, from 40rem up to the window's
+// width. Nothing is saved, so each visit starts at the width in styles.css ---
+function initWidth() {
+  const main = document.querySelector('main');
+  const rem = () => parseFloat(getComputedStyle(document.documentElement).fontSize); // px per rem
+  const widest = () => document.documentElement.clientWidth / rem(); // the window, in rem
+  let width = parseFloat(getComputedStyle(main).maxWidth) / rem();
+  // Steps from the width that shows, which is the window's when the cap is wider than the window.
+  const step = d => {
+    width = Math.max(40, Math.min(widest(), Math.min(width, widest()) + d));
+    main.style.maxWidth = width + 'rem';
+  };
+  $('narrow').addEventListener('click', () => step(-10));
+  $('widen').addEventListener('click', () => step(10));
+}
+
 // --- help pop-up ---
 function initHelp() {
   $('export-open').addEventListener('click', () => $('help').showModal());
@@ -295,6 +311,7 @@ function wireDropzone(zoneId, inputId, onFile) {
   const work = () => ({ header, rows, original, col });
 
   initSettings();
+  initWidth();
   initHelp();
   initTabs($('tabs'), setMode);
   setMode(mode);

@@ -90,9 +90,8 @@ button, input, select {
   border-color: var(--accent-soft);
 }
 
-.gear {
-  margin-left: auto;
-}
+/* Narrow and Widen, at the right of the top bar, as close as Settings' Text size buttons. */
+.page-width { margin-left: auto; display: flex; gap: 0.5rem; }
 
 /* 1.5em = one line of button text, so an icon button is as tall as a text button. */
 .btn img {
@@ -101,6 +100,7 @@ button, input, select {
   vertical-align: top;
 }
 
+/* max-width is the start width; Narrow and Widen change it (initWidth in index.js). */
 main {
   max-width: 100rem;
   margin: 0 auto;
