@@ -16,4 +16,5 @@ Bump the version to $ARGUMENTS, or, if that is empty, from vX.Y.Z to vX.Y.(Z+1).
 4. Put the new version in that `title`. Stage all changes and commit them. The message is a short
    summary of what this commit changes, with "Bump version to vX.Y.Z" as its last line. Then add a
    lightweight tag vX.Y.Z on that commit, like the existing tags.
-5. Don't push. Tell me the command: `git push origin main vX.Y.Z`.
+5. Don't push. Tell me the command: `git push origin main vX.Y.Z`. Always remind me that a plain
+   `git push` sends only `main`, so the tag stays local until it's pushed by name.
