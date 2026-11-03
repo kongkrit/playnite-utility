@@ -155,6 +155,7 @@ function wireDropzone(zoneId, inputId, onFile) {
 
 (function () {
   const TAG_SEP = ', '; // Library Exporter Advanced's default "Lists separator"
+  const NO_STATUS = '<NO STATUS>'; // Filter by status choice for an empty Completion Status
   const tagList = v => (v ? v.split(TAG_SEP) : []);
   // tags as a cell value, or the file's value orig when it holds the same tags in another order,
   // so a removed tag added back leaves the row unchanged rather than reordered.
@@ -390,7 +391,7 @@ function wireDropzone(zoneId, inputId, onFile) {
       () => { btn.textContent = 'Copy failed'; });
     setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
   });
-  for (const o of $('target').options) $('status-filter').add(new Option(o.text));
+  for (const s of [NO_STATUS, ...[...$('target').options].map(o => o.text)]) $('status-filter').add(new Option(s));
 
   // Shows the controls and help lines of the selected tab.
   function setMode(next) {
@@ -500,11 +501,12 @@ function wireDropzone(zoneId, inputId, onFile) {
   // side passes when it does (Tag: is off there). c: the column map of the rows being tested.
   function filters(c = col) {
     const q = $('filter').value.trim().toLowerCase();
-    const sf = $('status-filter').value; // '' for <NONE>
-    const src = $('source-filter').value; // '' for <NONE>
+    const sf = $('status-filter').value; // '' for <ANY>
+    const src = $('source-filter').value; // '' for <ANY>
     const tf = mode === 'diff' ? '' : $('tag-filter').value.trim().toLowerCase();
     const bothOk = r => (!q || r[c.name].toLowerCase().includes(q)) && (!src || r[c.source] === src);
-    const otherOk = r => (!sf || r[c.status] === sf) && (!tf || r[c.tags].toLowerCase().includes(tf));
+    const otherOk = r => (!sf || r[c.status] === (sf === NO_STATUS ? '' : sf))
+      && (!tf || r[c.tags].toLowerCase().includes(tf));
     return { bothOk, otherOk, matches: r => bothOk(r) && otherOk(r) };
   }
 
