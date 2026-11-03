@@ -538,6 +538,10 @@ function wireDropzone(zoneId, inputId, onFile) {
     const a = document.createDocumentFragment();
     const b = document.createDocumentFragment();
     let changed = 0;
+    // A cell's class lets a narrow list hide its column (see .c-* in styles.css). The column the
+    // tab edits gets none, so it always shows.
+    const cls = COLUMNS.map(([k]) => (col[k] === c ? '' : 'c-' + k));
+    for (const tr of document.querySelectorAll('.games thead tr')) [...tr.cells].forEach((th, j) => { th.className = cls[j]; });
 
     rows.forEach((r, i) => {
       const v = r[c];
@@ -556,7 +560,11 @@ function wireDropzone(zoneId, inputId, onFile) {
       tr.dataset.i = i;
       tr.classList.toggle('changed', isChanged);
       // The tab's own column shows its edit. append puts a string in as text, like textContent.
-      for (const [k] of COLUMNS) tr.insertCell().append(col[k] === c ? m.cell(v, orig) : cellText(k, r[col[k]]));
+      COLUMNS.forEach(([k], j) => {
+        const td = tr.insertCell();
+        td.className = cls[j];
+        td.append(col[k] === c ? m.cell(v, orig) : cellText(k, r[col[k]]));
+      });
       (inB ? b : a).append(tr);
     });
 

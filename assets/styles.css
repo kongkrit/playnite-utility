@@ -211,6 +211,16 @@ main {
 .games td + td { color: var(--muted); white-space: nowrap; }
 .games td:last-child { white-space: normal; }
 
+/* A list narrower than all six columns need hides them in this order: Time Played, Hidden,
+   Completion Status, Tags. Name and Sources have no rule, so they always show, and render()
+   leaves the class off the column the tab edits. A container query tests the list's own width,
+   not the window's; rem keeps the widths in step with the text size. */
+.lists section { container-type: inline-size; }
+@container (max-width: 46rem) { .c-time { display: none; } }
+@container (max-width: 40rem) { .c-hidden { display: none; } }
+@container (max-width: 34rem) { .c-status { display: none; } }
+@container (max-width: 26rem) { .c-tags { display: none; } }
+
 .changed { background: var(--warn-soft); }
 .games tr:hover, .diff tr:hover { background: var(--accent-soft); }
 

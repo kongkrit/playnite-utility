@@ -194,7 +194,7 @@ The page shows two lists side by side:
 - **Other statuses**, on the left: games whose status is not the target. Clicking one sets it to the target and moves it right.
 - **The target status**, on the right. Clicking a game you marked puts it back to the status it had in the file and moves it left. Games that already had the target status in the file don't move, because there is nothing to undo. To change one of those, pick its new status as the target and click it on the left.
 
-Each row shows the game's `Name`, `Hidden`, `Completion Status`, `Sources`, `Time Played` in hours, and `Tags`, under a row of column names, as on **Diff**. Games whose status differs from the file are highlighted in amber, and their status reads like `Played → Beaten`. The count next to **Export .csv** says how many games changed.
+Each row shows the game's `Name`, `Hidden`, `Completion Status`, `Sources`, `Time Played` in hours, and `Tags`, under a row of column names, as on **Diff**. A list too narrow for all six hides `Time Played` first, then `Hidden`, `Completion Status`, and `Tags`. `Name`, `Sources`, and the column the tab edits always show. Games whose status differs from the file are highlighted in amber, and their status reads like `Played → Beaten`. The count next to **Export .csv** says how many games changed.
 
 After each click, the filter box gets focus with its text selected, so you can type the next name straight away.
 
