@@ -251,11 +251,13 @@ dialog::backdrop { background: rgb(0 0 0 / 0.5); }
 
 .help-head h2 { margin: 0; }
 
-/* Export script options, one per row; the path box takes the rest of its row. */
+/* Export script options, one per row. A .ps-fill stretches to the end of its row, in the grid or
+   in a .ps-row, and the input in it takes the room left: the path box and the add box. */
 .ps-options { display: grid; gap: 0.5rem; justify-items: start; margin: 1rem 0; }
-.ps-path { justify-self: stretch; display: flex; align-items: center; gap: 0.5rem; }
-.ps-path input { flex: 1; }
-.ps-path[hidden] { display: none; } /* display: flex above would override hidden */
+.ps-row { display: flex; align-items: center; gap: 0.5rem; }
+.ps-row[hidden] { display: none; } /* display: flex above would override hidden */
+.ps-fill { justify-self: stretch; flex: 1; }
+.ps-fill input { flex: 1; }
 
 /* Grey block with the Copy button on its own strip at the top right, above the code. */
 .code {

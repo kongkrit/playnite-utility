@@ -65,7 +65,7 @@ Goal: as simple as possible, without saying anything false.
 
 - `.claude/settings.json` — committed settings (`model: opus`, `effortLevel: xhigh`), permission allowlist, and a `SessionStart` hook that prints `.claude/PROGRESS.md` into context. Personal overrides go in the gitignored `.claude/settings.local.json`, never here.
 - `.claude/commands/wrapup.md` — `/wrapup`: rewrites `.claude/PROGRESS.md` with the changes since the latest tag; it never stages or commits.
-- `.claude/commands/version-bump.md` — `/version-bump [version]`: sets the version in the page title's tooltip in `index.html`, commits it with all other changes, and tags that commit (default: bump the last number).
+- `.claude/commands/bump-version.md` — `/bump-version [version]`: sets the version in the page title's tooltip in `index.html`, commits it with all other changes, and tags that commit (default: bump the last number).
 - `.claude/PROGRESS.md` — session handoff maintained by `/wrapup`.
 - `.gitignore`, `.gitattributes` — ignore rules; LF line endings (CRLF kept for `*.csv`) and binary file types.
 - `README.md`, `LICENSE` — human-facing overview and license.

@@ -1,5 +1,5 @@
 /* Playnite Utility (index.html) — vanilla JS, no dependencies. Helpers first, then the page.
- * On the three Set tabs (Set Completion Status, Tag, Set Hidden), clicking a game moves it
+ * On the three Set tabs (Set Completion Status, Tag, Hide/un-hide), clicking a game moves it
  * between list A (without the target) and list B (with the target); the tab picks the target:
  * a Completion Status, a tag, or hidden.
  * The Filter tab edits nothing: it splits games into unmatched (A) and matched (B).
@@ -351,15 +351,16 @@ function wireDropzone(zoneId, inputId, onFile) {
       : '';
     const load = fromCsv ? `Import-Csv -Encoding UTF8 ${psQuote(path)}` : psPageRows(keys, picked);
     $('ps-path').closest('label').hidden = !fromCsv;
-    $('ps-modified').closest('label').hidden = fromCsv;
+    $('ps-modified').closest('.ps-row').hidden = fromCsv;
     $('script').textContent = hint || psScript(load, keys, tags);
     $('copy-script').disabled = !!hint;
   }
   document.querySelectorAll('.ps-options input').forEach(el => el.addEventListener('input', updateScript));
 
   // Runs after initHelp's listener has opened the dialog. Ticks the box of each column changed
-  // on this page, or the current tab's when none changed, and lists the tags added and removed
-  // on this page, or Tag name as one to add when none were.
+  // on this page, and List only modified entries if any did; if none did, a note says so.
+  // Lists the tags added and removed on this page, or, when none were, every tag in the file
+  // as ones to add, so an unedited export from one PC can tag the same games on another.
   // What is this page? starts collapsed, except on Filter, where it is all the dialog holds.
   $('export-open').addEventListener('click', () => {
     $('about').open = mode === 'filter';
@@ -368,13 +369,16 @@ function wireDropzone(zoneId, inputId, onFile) {
       const c = header.indexOf(MODES[k].column);
       return rows.some((r, i) => r[c] !== original[i][c]);
     });
-    for (const k of SET_KEYS) $('ps-' + k).checked = changed.length ? changed.includes(k) : k === mode;
+    for (const k of SET_KEYS) $('ps-' + k).checked = changed.includes(k);
+    $('ps-modified').checked = changed.length > 0;
+    $('ps-unmodified').hidden = changed.length > 0;
     // The tags in each row of a that are not in the same row of b.
     const missing = (a, b) => new Set(a.flatMap((r, i) =>
       tagList(r[col.tags]).filter(t => !tagList(b[i][col.tags]).includes(t))));
     const added = missing(rows, original);
     const removed = missing(original, rows);
-    $('ps-tags').value = added.size || removed.size ? [...added].join(TAG_SEP) : $('tag').value.trim();
+    const all = new Set(rows.flatMap(r => tagList(r[col.tags])));
+    $('ps-tags').value = [...(added.size || removed.size ? added : all)].join(TAG_SEP);
     $('ps-untags').value = [...removed].join(TAG_SEP);
     updateScript();
   });
@@ -481,7 +485,7 @@ function wireDropzone(zoneId, inputId, onFile) {
     loaded();
   });
 
-  // Set Hidden shows every game. Filter shows hidden ones only while Include hidden is ticked.
+  // Hide/un-hide shows every game. Filter shows hidden ones only while Include hidden is ticked.
   // The other two Set tabs and Diff follow the Show box. c: the row's column map.
   function shown(r, c = col) {
     const hidden = r[c.hidden] === 'True';

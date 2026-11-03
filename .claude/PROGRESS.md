@@ -23,7 +23,7 @@ Tested:
 
 ## Current state
 
-- **Release workflow:** work until the local copy is right, run `/wrapup`, then `/version-bump`. Push with the command it prints.
+- **Release workflow:** work until the local copy is right, run `/wrapup`, then `/bump-version`. Push with the command it prints.
 - `export.svg` and `gear.svg` are Lucide SVGs loaded with `<img>`. An `<img>` can't inherit the page's text color, so each repeats the `--text` colors from `styles.css` through `light-dark()`. If those colors change, change both icons too.
 - To test without a browser window, use headless Edge on a scratch copy of `index.html` with a `<base href>` that points at the repo. Any test script must sit inside a function, because `index.js` already declares a top-level `$`.
   - Load made-up CSVs by setting a file input's `files` through `DataTransfer` and firing `change`.
@@ -38,7 +38,7 @@ Tested:
 
 ## Next steps
 
-- Run `/version-bump` to commit this work and tag `v1.0.6`, then push with the command it prints.
+- Run `/bump-version` to commit this work and tag `v1.0.6`, then push with the command it prints.
 - Optional: in the real console, remove a game's only tag, and check that the export shows its Tags empty. So far only the mock has tested this.
 
 ## Open questions

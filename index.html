@@ -13,7 +13,7 @@
     <nav id="tabs" class="tabs" role="tablist">
       <button class="tab active" data-tab="status" role="tab" aria-selected="true">Set Completion Status</button>
       <button class="tab" data-tab="tag" role="tab" aria-selected="false">Tag</button>
-      <button class="tab" data-tab="hide" role="tab" aria-selected="false">Set Hidden</button>
+      <button class="tab" data-tab="hide" role="tab" aria-selected="false">Hide/un-hide</button>
       <button class="tab" data-tab="filter" role="tab" aria-selected="false">Filter</button>
       <button class="tab" data-tab="diff" role="tab" aria-selected="false">Diff</button>
     </nav>
@@ -199,8 +199,9 @@
         those commands. If they're gone, close the console and open it again.</li>
       <li>Under <strong>Import from</strong>, pick <strong>current content</strong> to apply the games as this page
         shows them, with no export, or <strong>a .csv</strong> to apply a file you exported. With
-        <strong>current content</strong>, <strong>List only modified entries</strong>, ticked at the start, lists
-        only the games whose ticked columns you changed, so the script stays short. Fill in the boxes
+        <strong>current content</strong>, <strong>List only modified entries</strong>, ticked when you
+        changed something on this page, lists only the games whose ticked columns you changed, so the
+        script stays short. Fill in the boxes
         below, then click <strong>Copy</strong>, paste the script into the console, and press Enter. For
         <strong>a .csv</strong>, get the path by right-clicking the file in File Explorer and choosing
         <strong>Copy as path</strong> (Windows 10: Shift+right-click).</li>
@@ -210,14 +211,15 @@
         <label><input type="radio" name="ps-from" id="ps-from-csv"> a .csv</label>
         <label><input type="radio" name="ps-from" id="ps-from-page" checked> current content</label>
       </span>
-      <label><input type="checkbox" id="ps-modified" checked> List only modified entries</label>
-      <label class="ps-path">Exported CSV file <input id="ps-path" placeholder="Full path of the exported .csv"></label>
+      <span class="ps-row"><label><input type="checkbox" id="ps-modified"> List only modified entries</label>
+        <span id="ps-unmodified" class="warn">The list hasn't been modified.</span></span>
+      <label class="ps-row ps-fill">Exported CSV file <input id="ps-path" placeholder="Full path of the exported .csv"></label>
       <label><input type="checkbox" id="ps-status"> Set Completion Status</label>
-      <span><label><input type="checkbox" id="ps-tag"> Set tags:</label>
-        <label>add <input id="ps-tags" placeholder="RPG, Co-op"></label>
+      <span class="ps-row ps-fill"><label><input type="checkbox" id="ps-tag"> Set tags:</label>
+        <label class="ps-row ps-fill">add <input id="ps-tags" placeholder="RPG, Co-op"></label>
         <label>remove <input id="ps-untags" placeholder="Demo"></label>
       </span>
-      <label><input type="checkbox" id="ps-hide"> Set Hidden</label>
+      <label><input type="checkbox" id="ps-hide"> Hide/un-hide</label>
     </div>
     <div class="code">
       <button id="copy-script" class="btn">Copy</button>
@@ -231,10 +233,12 @@
         <span class="mono">Tags</span> contain it, creating the tag in Playnite if it's new, and removes each
         tag under <strong>remove</strong> from the games whose <span class="mono">Tags</span> lack it. Tags in
         neither list are left alone.</li>
-      <li><strong>Set Hidden</strong> hides games whose <span class="mono">Hidden</span> says
+      <li><strong>Hide/un-hide</strong> hides games whose <span class="mono">Hidden</span> says
         <span class="mono">True</span> and un-hides those that say <span class="mono">False</span>, where that
         differs. Empty cells are skipped.</li>
-      <li>The boxes start ticked for each column you changed on this page. The script changes only the
+      <li>The boxes start ticked for each column you changed on this page. If you changed nothing, none is
+        ticked, and <strong>add</strong> lists every tag in the file, so an export from one PC can tag the
+        same games on another. The script changes only the
         ticked fields, and only where they differ, so running it twice is safe.</li>
       <li>The last line reports counts. <strong>matched 0</strong> means
         <span class="mono">$PlayniteApi</span> wasn't loaded: redo step 3. <strong>matched</strong> should be
