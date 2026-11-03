@@ -82,7 +82,7 @@ button, input, select {
 .tab:hover { color: var(--text); }
 
 /* The selected tab, and buttons that should stand out the same way. font-weight: a button
-   inherits it, and Diff's export buttons sit in bold <th> cells. */
+   inherits it, and the Diff and Filter export buttons sit in bold headers. */
 .tab.active, .btn.accent {
   font-weight: normal;
   background: var(--accent-soft);
@@ -145,19 +145,14 @@ main {
 
 /* ---------- Playnite Utility page ---------- */
 
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 16px;
-}
+/* Line 1: the filters. Line 2, on the edit tabs: the target and the export. */
+.controls { display: grid; gap: 12px; margin-bottom: 16px; }
+.controls div { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.controls div[hidden] { display: none; } /* display: flex above would override hidden */
 
 .controls input { flex: 1 1 200px; }
 
 .changed-count { color: var(--muted); }
-
-.sep { align-self: stretch; width: 1px; background: var(--border); }
 
 .btn { cursor: pointer; }
 .btn:hover:not(:disabled) { border-color: var(--accent); }

@@ -265,7 +265,7 @@ function wireDropzone(zoneId, inputId, onFile) {
     // Edits nothing, so it has no column and no target; with no target, clicks do nothing.
     filter: {
       target: () => '',
-      heads: (t, sf, a, b) => ['Unmatched (' + a + ')', 'MATCHED (' + b + ')'],
+      heads: (t, sf, a, b) => ['(' + a + ')', '(' + b + ')'], // after each list's export button
       summary: () => '',
       cell: (v, orig, r) => [r[col.status], r[col.tags]].filter(Boolean).join(' · '),
     },
@@ -502,7 +502,7 @@ function wireDropzone(zoneId, inputId, onFile) {
     const q = $('filter').value.trim().toLowerCase();
     const sf = $('status-filter').value; // '' for <NONE>
     const src = $('source-filter').value; // '' for <NONE>
-    const tf = mode === 'hide' || mode === 'filter' ? $('tag-filter').value.trim().toLowerCase() : '';
+    const tf = mode === 'diff' ? '' : $('tag-filter').value.trim().toLowerCase();
     const bothOk = r => (!q || r[c.name].toLowerCase().includes(q)) && (!src || r[c.source] === src);
     const otherOk = r => (!sf || r[c.status] === sf) && (!tf || r[c.tags].toLowerCase().includes(tf));
     return { bothOk, otherOk, matches: r => bothOk(r) && otherOk(r) };

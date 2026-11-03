@@ -186,7 +186,7 @@ It has five tabs: **Set Completion Status**, **Tag**, **Hide/un-hide**, **Filter
 
 1. Drop a Playnite export from section 3 onto the box.
 2. Pick the status you want to give games under **Target Completion Status**. The choices are Playnite's eight: `Abandoned`, `Beaten`, `Completed`, `Not Played`, `On Hold`, `Plan to Play`, `Played`, `Playing`.
-3. Type part of a name in the filter box to narrow both lists. Matching ignores case. **Source:** also narrows both lists, to one store; its choices are the stores in the dropped file. The box after the filter box, **Show all** by default, narrows both lists to **Show hidden** or **Show not hidden** games; an empty `Hidden` counts as not hidden. To narrow only the left list, pick a status under **Filter by status**. It matches the status each row currently shows, and `<NONE>` turns it off. For example, target `Beaten` with filter `Played` lists only the games you've played but not yet marked `Beaten`.
+3. Type part of a name in the filter box to narrow both lists. Matching ignores case. **Source:** also narrows both lists, to one store; its choices are the stores in the dropped file. The last box on the line, **Show all** by default, narrows both lists to **Show hidden** or **Show not hidden** games; an empty `Hidden` counts as not hidden. To narrow only the left list, pick a status under **Filter by status**. It matches the status each row currently shows, and `<NONE>` turns it off. For example, target `Beaten` with filter `Played` lists only the games you've played but not yet marked `Beaten`. The **Tag:** box, right after the filter box, also narrows only the left list. It keeps games whose tags contain the typed text, ignoring case. For example, `rpg` keeps games tagged `RPG` or `Action RPG`.
 4. Click games to mark them, then click **Export .csv**. It downloads `games-status_YYYYMMDD_HHMM.csv`. **Tag** and **Hide/un-hide** name theirs `games-tag_…` and `games-hide_…`.
 
 The page shows two lists side by side:
@@ -208,17 +208,17 @@ The **Tag** tab works the same way, with a tag in place of a status. Type the ta
 
 The **Hide/un-hide** tab hides and un-hides games. The left list, **Not hidden**, holds games whose `Hidden` isn't `True`. The right list, **Hidden**, holds the rest. Clicking a game on the left hides it. Clicking a game on the right un-hides it, even one that was hidden in the file. Each row shows the game's tags.
 
-Next to **Filter by name**, the **Tag:** box narrows only the left list, like **Filter by status**. It keeps games whose tags contain the typed text, ignoring case. For example, `rpg` keeps games tagged `RPG` or `Action RPG`.
+The filters work as on **Set Completion Status**, without the **Show all** box.
 
 **Export filtered games** usually leaves hidden games out, so the **Hidden** list starts empty. To see and un-hide games that are already hidden, use **Export all games**.
 
 ### Filter tab
 
-The **Filter** tab changes nothing. It splits the games into two lists by the filters on its line: **Filter by status**, **Source:**, **Filter by name**, and **Tag:**, which works as on **Hide/un-hide**. A game that passes all four is **MATCHED**, on the right. The rest are **Unmatched**, on the left. Empty filters match everything, so with no filters set, **Unmatched** is empty. Each row shows the game's status and tags. Clicking a game does nothing.
+The **Filter** tab changes nothing. It splits the games into two lists by the filters on its line: **Filter by status**, **Source:**, **Filter by name**, and **Tag:**, which works as on **Set Completion Status**. A game that passes all four is matched, on the right. The rest are unmatched, on the left. Empty filters match everything, so with no filters set, the unmatched list is empty. Each row shows the game's status and tags. Clicking a game does nothing.
 
 **Include hidden** is ticked by default, so games whose `Hidden` is `True` are in both lists and both exports like any other. Untick it to leave them out.
 
-**Export unmatched** and **Export matched** download `games-unmatched_YYYYMMDD_HHMM.csv` and `games-matched_YYYYMMDD_HHMM.csv`. Each holds exactly the games in its list, in file order, with every column of the dropped file and any edits made on the other tabs. Filter changes nothing in Playnite, so Export on this tab has no script.
+**Export unmatched** and **Export matched**, above each list next to its count, download `games-unmatched_YYYYMMDD_HHMM.csv` and `games-matched_YYYYMMDD_HHMM.csv`. Each holds exactly the games in its list, in file order, with every column of the dropped file and any edits made on the other tabs. Filter changes nothing in Playnite, so Export on this tab has no script.
 
 ### Diff tab
 
@@ -264,7 +264,7 @@ The page finds columns by their exact header text, and case matters, so extra or
 | `Name` | Every row. | The page rejects the file: *The file needs "Name" and "Sources" columns.* |
 | `Sources` | The store shown in each row, and the **Source:** filter. The Export scripts and **Diff** match games by name plus store. | The page rejects the file, as for `Name`. |
 | `Completion Status` | **Set Completion Status**, **Diff**, and **Filter by status** on every tab. | Added, empty. |
-| `Tags` | **Tag**, **Diff**, and the **Tag:** box and rows on **Hide/un-hide** and **Filter**. | Added, empty. |
+| `Tags` | **Tag**, **Diff**, the **Tag:** box on every tab but **Diff**, and the rows on **Hide/un-hide** and **Filter**. | Added, empty. |
 | `Hidden` | **Hide/un-hide**, **Diff**, **Include hidden** on **Filter**, and the **Show all** box on **Set Completion Status**, **Tag** and **Diff**. | Added, empty. Empty counts as not hidden. |
 | `Time Played` | The hours shown in each row, and **Compare time played** on **Diff**. | Added, empty. The page shows no hours. |
 

@@ -51,53 +51,54 @@
 
     <div id="app" hidden>
       <div class="controls">
-        <label>Filter by status
-          <select id="status-filter"><option value="">&lt;NONE&gt;</option></select>
-        </label>
-        <label>Source:
-          <select id="source-filter"><option value="">&lt;NONE&gt;</option></select>
-        </label>
-        <input type="search" id="filter" placeholder="Filter by name">
-        <select id="hidden-filter" data-mode="status tag diff">
-          <option value="all">Show all</option>
-          <option value="hidden">Show hidden</option>
-          <option value="not-hidden">Show not hidden</option>
-        </select>
-        <label data-mode="hide filter">Tag:
-          <input type="search" id="tag-filter" placeholder="Filter by tag" size="12">
-        </label>
-        <label data-mode="filter"><input type="checkbox" id="include-hidden" checked> Include hidden</label>
-        <label data-mode="diff"><input type="checkbox" id="only-diff"> Show only diff</label>
-        <label data-mode="diff"><input type="checkbox" id="compare-time" checked> Compare time played</label>
-        <span class="sep" aria-hidden="true" data-mode="status tag filter"></span>
-        <label data-mode="status">Target Completion Status
-          <select id="target">
-            <option>Abandoned</option>
-            <option>Beaten</option>
-            <option selected>Completed</option>
-            <option>Not Played</option>
-            <option>On Hold</option>
-            <option>Plan to Play</option>
-            <option>Played</option>
-            <option>Playing</option>
+        <div>
+          <label>Filter by status
+            <select id="status-filter"><option value="">&lt;NONE&gt;</option></select>
+          </label>
+          <label>Source:
+            <select id="source-filter"><option value="">&lt;NONE&gt;</option></select>
+          </label>
+          <input type="search" id="filter" placeholder="Filter by name">
+          <label data-mode="status tag hide filter">Tag:
+            <input type="search" id="tag-filter" placeholder="Filter by tag" size="12">
+          </label>
+          <select id="hidden-filter" data-mode="status tag diff">
+            <option value="all">Show all</option>
+            <option value="hidden">Show hidden</option>
+            <option value="not-hidden">Show not hidden</option>
           </select>
-        </label>
-        <label data-mode="tag">Tag name:
-          <input id="tag" placeholder="Tag name">
-        </label>
-        <span id="changed" class="changed-count" data-mode="status tag hide"></span>
-        <button id="export" class="btn" data-mode="status tag hide">Export .csv</button>
-        <button id="export-unmatched" class="btn" data-mode="filter">Export unmatched</button>
-        <button id="export-matched" class="btn" data-mode="filter">Export matched</button>
+          <label data-mode="filter"><input type="checkbox" id="include-hidden" checked> Include hidden</label>
+          <label data-mode="diff"><input type="checkbox" id="only-diff"> Show only diff</label>
+          <label data-mode="diff"><input type="checkbox" id="compare-time" checked> Compare time played</label>
+        </div>
+        <div data-mode="status tag hide">
+          <label data-mode="status">Target Completion Status
+            <select id="target">
+              <option>Abandoned</option>
+              <option>Beaten</option>
+              <option selected>Completed</option>
+              <option>Not Played</option>
+              <option>On Hold</option>
+              <option>Plan to Play</option>
+              <option>Played</option>
+              <option>Playing</option>
+            </select>
+          </label>
+          <label data-mode="tag">Tag name:
+            <input id="tag" placeholder="Tag name">
+          </label>
+          <span id="changed" class="changed-count"></span>
+          <button id="export" class="btn">Export .csv</button>
+        </div>
       </div>
 
       <div id="lists" class="lists">
         <section class="list" data-mode="status tag hide filter">
-          <h2 id="head-a"></h2>
+          <h2><button id="export-unmatched" class="btn accent" data-mode="filter">Export unmatched</button> <span id="head-a"></span></h2>
           <div class="scroll"><table class="games"><tbody id="list-a"></tbody></table></div>
         </section>
         <section class="list" data-mode="status tag hide filter">
-          <h2 id="head-b"></h2>
+          <h2><button id="export-matched" class="btn accent" data-mode="filter">Export matched</button> <span id="head-b"></span></h2>
           <div class="scroll"><table class="games"><tbody id="list-b"></tbody></table></div>
         </section>
       </div>
@@ -160,19 +161,18 @@
         <span class="mono">games-diff_YYYYMMDD_HHMM.csv</span>, with every column of that list.</li>
       <li data-mode="status">Pick the <strong>Target Completion Status</strong>.</li>
       <li data-mode="tag">Type the tag in <strong>Tag name</strong>.</li>
-      <li data-mode="hide">Hidden games are on the right. <strong>Tag:</strong> narrows the left list to games
-        whose tags contain the text.</li>
+      <li data-mode="hide">Hidden games are on the right.</li>
       <li data-mode="filter">Set any of <strong>Filter by status</strong>, <strong>Source:</strong>,
-        <strong>Filter by name</strong> and <strong>Tag:</strong>. Games that pass all of them are <strong>MATCHED</strong>, on the right; empty
-        filters match everything. The rest are <strong>Unmatched</strong>.</li>
+        <strong>Filter by name</strong> and <strong>Tag:</strong>. Games that pass all of them are matched, on the right; empty
+        filters match everything. The rest are unmatched, on the left.</li>
       <li data-mode="filter"><strong>Include hidden</strong>, ticked at the start, keeps games whose
         <span class="mono">Hidden</span> is <span class="mono">True</span>. Untick it to leave them out of both lists
         and both exports.</li>
-      <li data-mode="filter">Click <strong>Export unmatched</strong> or <strong>Export matched</strong> to download
+      <li data-mode="filter">Click <strong>Export unmatched</strong> or <strong>Export matched</strong>, above each list, to download
         <span class="mono">games-unmatched_YYYYMMDD_HHMM.csv</span> or
         <span class="mono">games-matched_YYYYMMDD_HHMM.csv</span>, with every column of the dropped file.
         Nothing changes in Playnite, so there is no script.</li>
-      <li data-mode="status tag hide">Narrow both lists with <strong>Filter by name</strong> and <strong>Source:</strong>. <strong>Filter by status</strong> narrows only the left list.</li>
+      <li data-mode="status tag hide">Narrow both lists with <strong>Filter by name</strong> and <strong>Source:</strong>. <strong>Filter by status</strong> and <strong>Tag:</strong>, which keeps games whose tags contain the text, narrow only the left list.</li>
       <li data-mode="status tag"><strong>Show all</strong> can narrow both lists to hidden or not hidden games.</li>
       <li data-mode="status tag hide">Click a game on the left to mark it. Click a game on the right to
         <span data-mode="status">undo a mark you made</span><span data-mode="tag">un-tag it, even if the file
