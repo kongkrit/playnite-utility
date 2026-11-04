@@ -26,7 +26,7 @@ Six commits, all pushed to `main`. The `v1.0.6` tag itself is still local only.
   - `render()` gives each cell the class `c-<key>`, except for the tab's own column. Name and Sources have no rule, so they always show. Diff is unaffected.
 - **Page width** (`7aa69a1`):
   - **Narrow** and **Widen**, left of Settings, step `main`'s `max-width` by 10rem, from 40rem up to the window's width (`initWidth`). Each visit starts at the 100rem in `styles.css`, and nothing is saved.
-  - The icons are `assets/narrow.svg` and `assets/widen.svg`. `.design/width-icons.html` previews them, with an unused 4:3 pair embedded as `<symbol>`s.
+  - The icons are `assets/narrow.svg` and `assets/widen.svg`. `.designs/width-icons.html` previews them, with an unused 4:3 pair embedded as `<symbol>`s.
 
 Tested, in headless Edge on made-up CSVs, for every change above:
 

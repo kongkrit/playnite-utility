@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Width icons</title>
+  <style>
+    /* Colors, text and buttons repeat assets/styles.css so this file opens on its own. They don't
+       follow later changes there. */
+    :root {
+      color-scheme: light dark;
+      --bg: light-dark(#f6f7f9, #121418);
+      --surface: light-dark(#ffffff, #1b1e24);
+      --text: light-dark(#1c1f24, #e6e8ec);
+      --muted: light-dark(#5d6470, #9aa3b0);
+      --border: light-dark(#d9dde3, #2d323b);
+      --accent: light-dark(#2f6fed, #6d9cff);
+    }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 0.9375rem/1.5 system-ui;
+      letter-spacing: -0.02em;
+    }
+    main { box-sizing: border-box; max-width: 100rem; margin: 0 auto; padding: 24px 16px 48px; }
+    button {
+      font: inherit;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--accent); }
+    /* As tall as the page's button icons; the viewBox sets the width. */
+    button svg { height: 1.5em; }
+    .mono { font-family: Consolas, monospace; font-size: 0.92em; }
+    .note { color: var(--muted); }
+    .sizes { display: flex; flex-wrap: wrap; align-items: end; gap: 1.5rem; margin: 1rem 0 2rem; }
+    .sizes figure { margin: 0; text-align: center; }
+    .sizes svg { display: block; margin: 0 auto 0.25rem; }
+    .sizes figcaption { color: var(--muted); font-size: 0.8125rem; }
+    /* <use> copies inherit these, so currentColor follows the text color around each icon. */
+    svg { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    /* The hidden attribute doesn't hide an <svg>; <use> still finds symbols in a display: none one. */
+    .defs { display: none; }
+  </style>
+</head>
+<body>
+  <!-- Every icon, drawn once here and shown below with <use>. The <svg> showing it sets its viewBox. -->
+  <svg class="defs">
+    <!-- Lucide "square-arrow-right-enter" (https://lucide.dev), ISC License, Copyright (c) Lucide Contributors. -->
+    <symbol id="export">
+      <path d="m10 16 4-4-4-4"/>
+      <path d="M3 12h11"/>
+      <path d="M3 8V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-3"/>
+    </symbol>
+    <!-- Lucide "settings" (https://lucide.dev), ISC License, Copyright (c) Lucide Contributors. -->
+    <symbol id="gear">
+      <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/>
+      <circle cx="12" cy="12" r="3"/>
+    </symbol>
+    <!-- The picked pair, copied from assets/narrow.svg and assets/widen.svg. -->
+    <symbol id="narrow">
+      <path d="M12 5v14"/>
+      <path d="M3 12h6"/>
+      <path d="m6 9 3 3-3 3"/>
+      <path d="M21 12h-6"/>
+      <path d="m18 9-3 3 3 3"/>
+    </symbol>
+    <symbol id="widen">
+      <path d="M3 5v14"/>
+      <path d="M21 5v14"/>
+      <path d="M6 12h12"/>
+      <path d="m9 9-3 3 3 3"/>
+      <path d="m15 9 3 3-3 3"/>
+    </symbol>
+    <!-- The unused 4:3 pair. -->
+    <symbol id="widen-4x3">
+      <path d="M3 5v14"/>
+      <path d="M29 5v14"/>
+      <path d="M6 12h20"/>
+      <path d="m9 9-3 3 3 3"/>
+      <path d="m23 9 3 3-3 3"/>
+    </symbol>
+    <symbol id="narrow-4x3">
+      <path d="M16 5v14"/>
+      <path d="M3 12h10"/>
+      <path d="m10 9 3 3-3 3"/>
+      <path d="M29 12h-10"/>
+      <path d="m22 9-3 3 3 3"/>
+    </symbol>
+  </svg>
+
+  <main>
+    <h2>widen.svg and narrow.svg</h2>
+    <p class="note">
+      <strong>widen:</strong> arrows push out to both edges. <strong>narrow:</strong> arrows pull in to
+      the middle. Both use the Export and Settings icons' 1.5 stroke and round ends, and colors follow
+      the system theme, as the page's other icons do.
+      <strong>Picked</strong>: square, 24×24 units, in <span class="mono">assets/</span>.
+      <strong>Not used</strong>: 4:3, 32×24 units, with longer arrows and the same 45° arrowheads,
+      kept in this file.
+    </p>
+
+    <p class="note">As buttons: picked, then not used.</p>
+    <div class="sizes">
+      <button><svg viewBox="0 0 24 24"><use href="#narrow"/></svg></button>
+      <button><svg viewBox="0 0 24 24"><use href="#widen"/></svg></button>
+      <button><svg viewBox="0 0 32 24"><use href="#narrow-4x3"/></svg></button>
+      <button><svg viewBox="0 0 32 24"><use href="#widen-4x3"/></svg></button>
+    </div>
+
+    <h3>Picked, square</h3>
+    <div class="sizes">
+      <figure><svg viewBox="0 0 24 24" height="16"><use href="#widen"/></svg><figcaption>16</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="22"><use href="#widen"/></svg><figcaption>22, button</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="32"><use href="#widen"/></svg><figcaption>32</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="48"><use href="#widen"/></svg><figcaption>48</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="96"><use href="#widen"/></svg><figcaption>widen, 96</figcaption></figure>
+    </div>
+    <div class="sizes">
+      <figure><svg viewBox="0 0 24 24" height="16"><use href="#narrow"/></svg><figcaption>16</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="22"><use href="#narrow"/></svg><figcaption>22, button</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="32"><use href="#narrow"/></svg><figcaption>32</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="48"><use href="#narrow"/></svg><figcaption>48</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="96"><use href="#narrow"/></svg><figcaption>narrow, 96</figcaption></figure>
+    </div>
+
+    <h3>Not used, 4:3</h3>
+    <div class="sizes">
+      <figure><svg viewBox="0 0 32 24" height="16"><use href="#widen-4x3"/></svg><figcaption>16</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="22"><use href="#widen-4x3"/></svg><figcaption>22, button</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="32"><use href="#widen-4x3"/></svg><figcaption>32</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="48"><use href="#widen-4x3"/></svg><figcaption>48</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="96"><use href="#widen-4x3"/></svg><figcaption>widen, 96</figcaption></figure>
+    </div>
+    <div class="sizes">
+      <figure><svg viewBox="0 0 32 24" height="16"><use href="#narrow-4x3"/></svg><figcaption>16</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="22"><use href="#narrow-4x3"/></svg><figcaption>22, button</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="32"><use href="#narrow-4x3"/></svg><figcaption>32</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="48"><use href="#narrow-4x3"/></svg><figcaption>48</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="96"><use href="#narrow-4x3"/></svg><figcaption>narrow, 96</figcaption></figure>
+    </div>
+
+    <p class="note">Beside the existing icons, all 48 tall:</p>
+    <div class="sizes">
+      <figure><svg viewBox="0 0 24 24" height="48"><use href="#export"/></svg><figcaption>export</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="48"><use href="#gear"/></svg><figcaption>gear</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="48"><use href="#narrow"/></svg><figcaption>narrow, picked</figcaption></figure>
+      <figure><svg viewBox="0 0 24 24" height="48"><use href="#widen"/></svg><figcaption>widen, picked</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="48"><use href="#narrow-4x3"/></svg><figcaption>narrow, not used</figcaption></figure>
+      <figure><svg viewBox="0 0 32 24" height="48"><use href="#widen-4x3"/></svg><figcaption>widen, not used</figcaption></figure>
+    </div>
+  </main>
+</body>
+</html>

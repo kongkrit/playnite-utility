@@ -71,7 +71,7 @@ Goal: as simple as possible, without saying anything false.
 - `README.md`, `LICENSE` — human-facing overview and license.
 - `index.html` — the Playnite Utility page. Users open it by double-clicking, so it runs from `file://` with no server.
 - `assets/` — files the page loads: `index.js`, `styles.css`, `icon.svg` (tab icon), `export.svg` (Export button icon), `narrow.svg` and `widen.svg` (page width button icons), `gear.svg` (Settings button icon).
-- `.design/` — design previews, such as `width-icons.html`; the page doesn't load them.
+- `.designs/` — design previews, such as `width-icons.html`; the page doesn't load them.
 - `playnite-utility.ico` — `assets/icon.svg` as a Windows icon; stays at the root.
 
 ## Conventions
